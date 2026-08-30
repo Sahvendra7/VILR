@@ -21,15 +21,18 @@ class AttackRunner:
                     
                     # Reset mock provider call count if accessible
                     mock_provider = app.state.gateway.payment_executor.provider
-                    if hasattr(mock_provider, 'call_count'):
-                        mock_provider.call_count = 0
+                    if hasattr(mock_provider, 'payment_call_count'):
+                        mock_provider.payment_call_count = 0
+                    if hasattr(mock_provider, 'payment_creation_count'):
+                        mock_provider.payment_creation_count = 0
                     
                     start_time = time.time()
                     try:
                         exec_result = await attack.execute(client)
                         duration_ms = (time.time() - start_time) * 1000
                         
-                        calls = getattr(mock_provider, 'call_count', 0)
+                        calls = getattr(mock_provider, 'payment_call_count', 0)
+                        creations = getattr(mock_provider, 'payment_creation_count', 0)
                         
                         results.append(
                             AttackResult(
@@ -42,13 +45,18 @@ class AttackRunner:
                                 severity=attack.severity,
                                 http_status=exec_result.http_status,
                                 payment_call_count=calls,
+                                payment_creation_count=creations,
+                                transaction_id=exec_result.transaction_id,
+                                evidence=exec_result.evidence,
+                                actual=exec_result.outcome.value,
                                 duration_ms=duration_ms,
                                 error=exec_result.error
                             )
                         )
                     except Exception as e:
                         duration_ms = (time.time() - start_time) * 1000
-                        calls = getattr(mock_provider, 'call_count', 0)
+                        calls = getattr(mock_provider, 'payment_call_count', 0)
+                        creations = getattr(mock_provider, 'payment_creation_count', 0)
                         print(f"Error in {attack.attack_id}: {traceback.format_exc()}")
                         results.append(
                             AttackResult(
@@ -61,6 +69,10 @@ class AttackRunner:
                                 severity=attack.severity,
                                 http_status=500,
                                 payment_call_count=calls,
+                                payment_creation_count=creations,
+                                transaction_id="",
+                                evidence="",
+                                actual="ERROR",
                                 duration_ms=duration_ms,
                                 error=str(e),
                                 details=traceback.format_exc()

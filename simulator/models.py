@@ -16,10 +16,15 @@ class Severity(str, Enum):
     LOW = "LOW"
 
 @dataclass
+@dataclass
 class ExecutionResult:
     outcome: AttackOutcome
     http_status: int = 0
     error: str = ""
+    payment_call_count: int = 0
+    payment_creation_count: int = 0
+    transaction_id: str = ""
+    evidence: str = ""
 
 @dataclass
 class AttackDefinition:
@@ -48,8 +53,16 @@ class AttackResult:
     severity: Severity
     http_status: int = 0
     payment_call_count: int = 0
+    payment_creation_count: int = 0
+    transaction_id: str = ""
+    evidence: str = ""
+    actual: str = ""
     duration_ms: float = 0.0
     error: str = ""
+    payment_call_count: int = 0
+    payment_creation_count: int = 0
+    transaction_id: str = ""
+    evidence: str = ""
     details: str = ""
     
     @property
