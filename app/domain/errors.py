@@ -49,3 +49,12 @@ class IdempotencyOwnershipFailure(IdempotencyError):
 class PolicyUnavailable(VILRError):
     """Raised when the OPA policy engine is unreachable."""
     pass
+
+class PaymentProviderError(VILRError):
+    pass
+
+class PaymentExecutionFailed(VILRError):
+    pass
+
+class IdempotencyConflict(IdempotencyError):
+    pass

@@ -21,17 +21,26 @@ class AuthorizeRequest(BaseModel):
     closed_checkout_token: str
     user_intent: UserIntent
     cart: Cart
+    user_public_key: Dict[str, Any]
+    merchant_public_key: Dict[str, Any]
 
 class AuthorizeResponse(BaseModel):
     transaction_id: str
     status: str
     message: str
     reservation_status: Optional[str] = None
+    execution_token: Optional[str] = None
+    policy_version: Optional[str] = None
 
 class ExecuteRequest(BaseModel):
     transaction_id: Identifier
-    open_payment_token: str
-    closed_payment_token: str
+    execution_token: str
+    amount: float
+    currency: str
+    merchant_id: str
+    mandate_hash: str
+    provider_idempotency_key: str
+    payment_method_id: str
 
 class ExecuteResponse(BaseModel):
     transaction_id: str

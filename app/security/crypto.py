@@ -38,7 +38,7 @@ def public_key_to_jwk(public_key: ec.EllipticCurvePublicKey) -> dict:
 def jwk_to_public_key(jwk_dict: dict) -> ec.EllipticCurvePublicKey:
     """Converts a JWK representation to a P-256 public key."""
     if jwk_dict.get("kty") != "EC" or jwk_dict.get("crv") != "P-256":
-        raise ValueError("Only P-256 EC keys supported")
+        raise ValueError(f"Only P-256 EC keys supported: {jwk_dict}")
         
     x = int.from_bytes(b64url_decode(jwk_dict["x"]), byteorder='big')
     y = int.from_bytes(b64url_decode(jwk_dict["y"]), byteorder='big')

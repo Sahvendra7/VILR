@@ -5,13 +5,48 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from app.config.settings import settings
 from app.api.routes import router as v1_router
+from contextlib import asynccontextmanager
+
+from app.mandates.verifier import VILRMandateVerifier
+from app.idempotency.store import RedisIdempotencyStore
+from app.semantic.provider import get_provider
+from app.semantic.verifier import AISemanticVerifier
+from app.policy.engine import OPAPolicyEngine
+from app.execution.executor import PaymentExecutor
+from adapters.razorpay.provider import MockRazorpayProvider
+from app.audit.ledger import MemoryAuditLedger
+from app.domain.gateway import GatewayOrchestrator
 from app.domain.errors import (
     VILRError, InvalidStateTransition, InvalidRequest, MandateExpired,
     InvalidSignature, HashMismatch, MerchantUntrusted, ReplayDetected,
     SemanticDrift, PolicyDenied, PaymentUnknown, DuplicateExecution
 )
 
-app = FastAPI(title=settings.app_name)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    redis_client = redis.from_url(settings.redis_url)
+    
+    verifier = VILRMandateVerifier()
+    idempotency = RedisIdempotencyStore(redis_client)
+    semantic_provider = get_provider(settings.llm_provider)
+    semantic = AISemanticVerifier(semantic_provider)
+    policy = OPAPolicyEngine(opa_url=settings.opa_url)
+    provider = MockRazorpayProvider()
+    executor = PaymentExecutor(provider)
+    audit = MemoryAuditLedger()
+    
+    app.state.gateway = GatewayOrchestrator(
+        verifier=verifier,
+        idempotency=idempotency,
+        semantic=semantic,
+        policy=policy,
+        payment_executor=executor,
+        audit=audit
+    )
+    yield
+    await redis_client.close()
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.include_router(v1_router)
 

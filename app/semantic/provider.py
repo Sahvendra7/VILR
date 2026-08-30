@@ -76,3 +76,8 @@ class AnthropicLLMProvider(LLMProvider):
         except Exception as e:
             logger.error("LLM_PROVIDER_ERROR", error=str(e))
             raise LLMProviderError(f"LLM request failed: {e}") from e
+
+def get_provider(provider_type: str = "mock", api_key: str = ""):
+    if provider_type == "anthropic":
+        return AnthropicProvider(api_key=api_key)
+    return MockLLMProvider()

@@ -52,5 +52,5 @@ class AuditLedger(Protocol):
     async def list_by_user(self, user_id: str) -> List[AuditRecord]:
         ...
         
-    async def verify_chain(self) -> Tuple[bool, Optional[int]]:
+    async def verify_chain(self, transaction_id: str) -> dict:
         ...

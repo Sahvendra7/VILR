@@ -76,7 +76,8 @@ def test_execution_request_valid():
         merchant_id="m_789",
         amount=Decimal("10.00"),
         currency="USD",
-        payment_method_id="pm_abc"
+        payment_method_id="pm_abc",
+        mandate_hash="hash_123"
     )
     assert er.transaction_id == "tx_123"
     assert er.amount == Decimal("10.00")
@@ -93,15 +94,20 @@ def test_execution_request_invalid_currency():
         )
 
 def test_audit_record_valid():
-    from datetime import datetime
+    from datetime import datetime, UTC
     ar = AuditRecord(
         transaction_id="tx_1",
-        state="PAYMENT_CONFIRMED",
-        decision="ALLOW",
-        timestamps={"created": datetime.now()},
+        user_id="usr",
+        agent_id="agt",
+        merchant_id="mer",
+        intent_hash="inh",
         open_mandate_hash="hash1",
-        checkout_hash="hash2",
-        current_record_hash="hash3"
+        cart_hash="hash2",
+        state="PAYMENT_CONFIRMED",
+        timestamp=datetime.now(UTC),
+        nonce="123",
+        prev_record_hash="hash_p",
+        record_hash="hash_r"
     )
     assert ar.transaction_id == "tx_1"
 

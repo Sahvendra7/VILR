@@ -22,7 +22,8 @@ class OPAPolicyEngine(PolicyEngine):
                 )
                 response.raise_for_status()
                 # OPA wraps the return in a "result" key
-                result = response.json().get("result", {})
+                response_json = response.json()
+                result = response_json.get("result", {})
                 
                 # If the policy evaluated successfully but result is empty, it means default deny
                 if not result:

@@ -113,6 +113,7 @@ class ExecutionRequest(BaseModel):
     amount: Money
     currency: CurrencyCode
     payment_method_id: Identifier
+    mandate_hash: str
 
 class ExecutionReceipt(BaseModel):
     transaction_id: Identifier
@@ -124,10 +125,21 @@ class ExecutionReceipt(BaseModel):
 # Audit
 class AuditRecord(BaseModel):
     transaction_id: Identifier
-    state: str
-    decision: str
-    timestamps: Dict[str, datetime]
+    user_id: str
+    agent_id: str
+    merchant_id: str
+    intent_hash: str
     open_mandate_hash: str
-    checkout_hash: str
-    prev_record_hash: Optional[str] = None
-    current_record_hash: str
+    cart_hash: str
+    policy_decision: Optional[str] = None
+    semantic_decision: Optional[str] = None
+    semantic_confidence: Optional[float] = None
+    authorization_status: Optional[str] = None
+    timestamp: datetime
+    nonce: str
+    payment_attempt_id: Optional[str] = None
+    execution_status: Optional[str] = None
+    failure_reason: Optional[str] = None
+    state: str
+    prev_record_hash: str
+    record_hash: str
