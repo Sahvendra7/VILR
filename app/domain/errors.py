@@ -46,3 +46,6 @@ class IdempotencyUnavailable(IdempotencyError):
 class IdempotencyOwnershipFailure(IdempotencyError):
     """Raised when an operation is attempted by a non-owner."""
     pass
+class PolicyUnavailable(VILRError):
+    """Raised when the OPA policy engine is unreachable."""
+    pass
