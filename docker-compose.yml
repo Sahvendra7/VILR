@@ -1,0 +1,32 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - OPA_URL=http://opa:8181
+      - LLM_PROVIDER=mock
+    depends_on:
+      - redis
+      - opa
+    volumes:
+      - ./app:/app/app
+      - ./adapters:/app/adapters
+      - ./policies:/app/policies
+
+  redis:
+    image: "redis:7-alpine"
+    ports:
+      - "6379:6379"
+    command: redis-server --save "" --appendonly no
+
+  opa:
+    image: "openpolicyagent/opa:latest"
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./policies:/policies
+    command: ["run", "--server", "--addr", ":8181", "--log-level=debug", "/policies"]
