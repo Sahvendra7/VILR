@@ -26,8 +26,12 @@ class IdempotencyStore(Protocol):
     async def is_reserved_or_committed(self, key: str) -> Tuple[bool, Optional[str]]:
         ...
 
+class LLMProvider(Protocol):
+    async def generate_json(self, system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> dict:
+        ...
+
 class SemanticVerifier(Protocol):
-    async def verify(self, user_intent: UserIntent, cart: Cart) -> SemanticAssessment:
+    async def verify(self, intent: UserIntent, cart: Cart) -> SemanticAssessment:
         ...
 
 class PolicyEngine(Protocol):

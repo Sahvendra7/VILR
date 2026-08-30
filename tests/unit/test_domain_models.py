@@ -49,19 +49,21 @@ def test_cart_item_validation():
 def test_semantic_assessment_confidence_bounds():
     with pytest.raises(ValidationError):
         SemanticAssessment(
-            is_aligned=True, confidence=1.5, category_match=True, product_identity_match=True,
-            brand_match=True, use_case_match=True, suspicious_substitution_signals=[], violations=[], reasoning="test"
+            status="PASS", confidence=1.5, checks={}, violations=[], reasoning="test"
         )
     with pytest.raises(ValidationError):
         SemanticAssessment(
-            is_aligned=True, confidence=-0.1, category_match=True, product_identity_match=True,
-            brand_match=True, use_case_match=True, suspicious_substitution_signals=[], violations=[], reasoning="test"
+            status="PASS", confidence=-0.1, checks={}, violations=[], reasoning="test"
         )
     sa = SemanticAssessment(
-        is_aligned=True, confidence=0.99, category_match=True, product_identity_match=True,
-        brand_match=True, use_case_match=True, suspicious_substitution_signals=[], violations=[], reasoning="test"
+        status="PASS", confidence=0.99, checks={}, violations=[], reasoning="test"
     )
     assert sa.confidence == 0.99
+    
+    with pytest.raises(ValidationError):
+        SemanticAssessment(
+            status="INVALID", confidence=0.9, checks={}, violations=[], reasoning="test"
+        )
 
 def test_missing_required_fields():
     with pytest.raises(ValidationError):

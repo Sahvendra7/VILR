@@ -88,25 +88,21 @@ class ClosedPaymentMandate(BaseModel):
 
 # Semantic Layer
 class SemanticViolation(BaseModel):
-    rule: str
-    description: str
-    severity: Literal["low", "medium", "high", "critical"]
+    type: str
+    severity: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    evidence: str
 
 class SemanticAssessment(BaseModel):
-    is_aligned: bool
-    confidence: Confidence
-    category_match: bool
-    product_identity_match: bool
-    brand_match: bool
-    use_case_match: bool
-    suspicious_substitution_signals: List[str]
+    status: Literal["PASS", "REVIEW", "FAIL"]
+    confidence: float = Field(ge=0.0, le=1.0)
+    checks: Dict[str, bool] = Field(default_factory=dict)
     violations: List[SemanticViolation]
     reasoning: str
 
 # Policy Engine
 class AuthorizationDecision(BaseModel):
     allowed: bool
-    reason: str
+    violations: List[Dict[str, str]]
     policy_version: str
 
 # Execution
