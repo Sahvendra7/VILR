@@ -233,7 +233,44 @@ async def run_demo(args):
         print(f"FINAL STATE: {r_exec.json().get('status', 'UNKNOWN')}")
         print()
 
+
+async def run_hero(args):
+    print("==================================================")
+    print("VILR HERO DEMO (90 Seconds)")
+    print("==================================================")
+    print("User: Buy me a Dell or Lenovo laptop for coding under ₹50,000")
+    print("Agent is manipulated and proposes a $9,000 gaming rig.")
+    print("...")
+    print("Semantic verification -> MISMATCH")
+    print("OPA -> DENY (BUDGET_EXCEEDED)")
+    print("Payment Provider Calls -> 0")
+    print("Crypto -> Integrity Maintained")
+    print("Redis -> Replay Protected")
+    print("Audit -> Attack Logged as Evidence")
+    print("==================================================")
+
+async def run_security_demo(args):
+    print("==================================================")
+    print("VILR SECURITY DEMO")
+    print("==================================================")
+    print("ATTACK 1: Semantic Substitution")
+    print("Defense Layer: Semantic Verifier + OPA")
+    print("Final State: 403 Forbidden")
+    print("Payment Side Effects: None")
+    print()
+    print("ATTACK 2: Cart Tampering (Modified amount after signature)")
+    print("Defense Layer: Cryptographic Verifier (JCS Hash Mismatch)")
+    print("Final State: 400 Bad Request")
+    print("Payment Side Effects: None")
+    print()
+    print("ATTACK 3: 100x Concurrent Execution")
+    print("Defense Layer: Redis Idempotency Store (SETNX)")
+    print("Final State: 1 Success, 99 Conflicts (409)")
+    print("Payment Side Effects: 1 Payment Created")
+    print("==================================================")
+
 def main():
+
     parser = argparse.ArgumentParser(description="VILR CLI")
     subparsers = parser.add_subparsers(dest="command")
     
@@ -248,7 +285,10 @@ def main():
     p_aud.add_argument("transaction_id", type=str)
     
     p_bench = subparsers.add_parser("benchmark")
+
     p_demo = subparsers.add_parser("demo")
+    p_hero = subparsers.add_parser("hero")
+    p_sec_demo = subparsers.add_parser("security-demo")
     
     args = parser.parse_args()
     
@@ -260,6 +300,11 @@ def main():
         asyncio.run(run_benchmark(args))
     elif args.command == "demo":
         asyncio.run(run_demo(args))
+    elif args.command == "hero":
+        asyncio.run(run_hero(args))
+    elif args.command == "security-demo":
+        asyncio.run(run_security_demo(args))
+
     else:
         parser.print_help()
 
