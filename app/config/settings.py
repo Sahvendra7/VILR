@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     llm_provider: str = "mock"
     anthropic_api_key: str = ""
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.6-flash"
 
     model_config = SettingsConfigDict(env_file=".env")
 

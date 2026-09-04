@@ -55,7 +55,7 @@ class AnthropicLLMProvider(LLMProvider):
         }
         
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.post(self.url, headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
@@ -85,7 +85,7 @@ from pydantic import ValidationError
 from app.domain.models import SemanticAssessment
 
 class GeminiLLMProvider(LLMProvider):
-    def __init__(self, api_key: str, model: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: str, model: str = "gemini-3.6-flash"):
         self.api_key = api_key
         self.model = model
         # Initialize sync and async clients
@@ -96,7 +96,28 @@ class GeminiLLMProvider(LLMProvider):
             config = types.GenerateContentConfig(
                 system_instruction=system_prompt,
                 response_mime_type="application/json",
-                response_schema=SemanticAssessment,
+                                response_schema={
+                    "type": "OBJECT",
+                    "properties": {
+                        "status": {"type": "STRING", "enum": ["PASS", "REVIEW", "FAIL"]},
+                        "confidence": {"type": "NUMBER"},
+                        "checks": {"type": "OBJECT"},
+                        "violations": {
+                            "type": "ARRAY",
+                            "items": {
+                                "type": "OBJECT",
+                                "properties": {
+                                    "type": {"type": "STRING"},
+                                    "severity": {"type": "STRING", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+                                    "evidence": {"type": "STRING"}
+                                },
+                                "required": ["type", "severity", "evidence"]
+                            }
+                        },
+                        "reasoning": {"type": "STRING"}
+                    },
+                    "required": ["status", "confidence", "checks", "violations", "reasoning"]
+                },
                 temperature=0.0,
                 max_output_tokens=max_tokens
             )
@@ -110,7 +131,7 @@ class GeminiLLMProvider(LLMProvider):
                 )
                 
             start_time = asyncio.get_event_loop().time()
-            response = await asyncio.wait_for(_call(), timeout=10.0)
+            response = await asyncio.wait_for(_call(), timeout=30.0)
             latency = asyncio.get_event_loop().time() - start_time
             
             logger.info("GEMINI_API_CALL", model=self.model, latency=f"{latency:.3f}s", status="SUCCESS")
@@ -119,7 +140,7 @@ class GeminiLLMProvider(LLMProvider):
                 raise LLMProviderError("Empty response from Gemini")
                 
             if response.parsed:
-                return response.parsed.model_dump()
+                return response.parsed if isinstance(response.parsed, dict) else response.parsed.model_dump()
             else:
                 return json.loads(response.text)
                 
@@ -136,7 +157,7 @@ class GeminiLLMProvider(LLMProvider):
             logger.error("LLM_PROVIDER_ERROR", error=str(e))
             raise LLMProviderError(f"LLM request failed: {e}") from e
 
-def get_provider(provider_type: str = "mock", api_key: str = "", model: str = "gemini-2.5-flash"):
+def get_provider(provider_type: str = "mock", api_key: str = "", model: str = "gemini-3.6-flash"):
     if provider_type == "anthropic":
         return AnthropicLLMProvider(api_key=api_key)
     elif provider_type == "gemini":
