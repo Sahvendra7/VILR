@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     
     verifier = VILRMandateVerifier()
     idempotency = RedisIdempotencyStore(redis_client)
-    semantic_provider = get_provider(settings.llm_provider)
+    semantic_provider = get_provider(settings.llm_provider, api_key=settings.gemini_api_key, model=settings.gemini_model)
     semantic = AISemanticVerifier(semantic_provider)
     policy = OPAPolicyEngine(opa_url=settings.opa_url)
     provider = MockRazorpayProvider()

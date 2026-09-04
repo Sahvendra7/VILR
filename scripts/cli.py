@@ -82,8 +82,20 @@ async def run_benchmark(args):
     print("Performance benchmark generated at docs/performance-benchmark.md")
 
 async def run_demo(args):
+    from app.semantic.provider import get_provider
+    from app.semantic.verifier import AISemanticVerifier
+    from app.core.config import settings
+    
     generator = ScenarioGenerator()
     async with app.router.lifespan_context(app), AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        
+        if getattr(args, "llm", "mock") == "gemini":
+            print("==================================================")
+            print("INITIALIZING GEMINI API PROVIDER...")
+            print("==================================================")
+            provider = get_provider("gemini", api_key=settings.gemini_api_key, model=settings.gemini_model)
+            app.state.gateway.semantic = AISemanticVerifier(provider)
+        
         
         class MockDecision:
             def __init__(self, allowed, reason):
@@ -287,6 +299,7 @@ def main():
     p_bench = subparsers.add_parser("benchmark")
 
     p_demo = subparsers.add_parser("demo")
+    p_demo.add_argument("--llm", type=str, choices=["mock", "gemini"], default="mock", help="Choose the LLM provider for semantic verification")
     p_hero = subparsers.add_parser("hero")
     p_sec_demo = subparsers.add_parser("security-demo")
     

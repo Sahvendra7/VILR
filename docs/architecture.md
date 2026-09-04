@@ -338,3 +338,13 @@ The current architecture safely isolates side effects, making it naturally compa
 - **AI Recommendation**: In a future extension, an AI Agent could observe a `PAYMENT_FAILED` state and propose a recovery action (e.g., "retry with backup payment method pm-456").
 - **Deterministic Authorization**: The recovery request would flow through the exact same OPA policy engine to ensure the backup method is allowed and the mandate hasn't expired.
 - **Execution isolation**: Only the `PaymentExecutor` is permitted to initiate the retry, preserving the invariant that AI only *recommends* while the Gateway *authorizes and executes*.
+
+## 9. Semantic Provider Architecture
+VILR implements a strict separation of concerns around AI evaluation. The system currently supports:
+1. **Mock semantic provider** (`MockLLMProvider`): The default provider used for deterministic unit and integration testing.
+2. **Gemini-backed provider** (`GeminiLLMProvider`): Uses the official `google-genai` Python SDK to perform real semantic evaluation against the Gemini API using structured outputs.
+
+**Security Constraints:**
+- The LLM provides *probabilistic semantic evidence* that is independently evaluated by *deterministic policy*.
+- Gemini does **not** guarantee security, nor does it deterministically prevent all prompt injections. It is treated exclusively as an untrusted evidence generator.
+- AI cannot authorize money movement. The OPA engine is strictly responsible for interpreting the semantic evaluation's `status` and rendering a deterministic authorization decision.
