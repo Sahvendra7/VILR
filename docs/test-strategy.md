@@ -154,9 +154,9 @@ System efficacy and security posture are measured against these strict targets:
 | **Hard Policy Violation Rate** | 0% | Automated test suite execution |
 | **Semantic Attack Detection Rate** | Measured per run (report actual) | Adversarial test suite |
 | **False Rejection Rate** | < 1% | E2E test suite with valid payloads |
-| **Replay Prevention Rate** | 100% | Concurrency & Idempotency tests |
-| **Cart Tamper Detection Rate** | 100% | Cryptographic test suite |
-| **Malformed Input Rejection Rate** | 100% | Fuzzing & Domain tests |
+| **Replay Prevention Rate** | PASS | Concurrency & Idempotency tests |
+| **Cart Tamper Detection Rate** | PASS | Cryptographic test suite |
+| **Malformed Input Rejection Rate** | PASS | Fuzzing & Domain tests |
 | **Duplicate Execution Rate** | 0% | High-concurrency load tests |
 | **Gateway Latency** | P50 < 100ms, P95 < 300ms, P99 < 500ms | Load testing (excluding LLM latency) |
 

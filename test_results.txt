@@ -1,0 +1,48 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/sahvendraz/Desktop/VILR/venv12/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /Users/sahvendraz/Desktop/VILR
+configfile: pyproject.toml
+plugins: cov-7.1.0, asyncio-1.4.0, anyio-4.14.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 199 items
+
+tests/integration/test_cart_http.py::test_cart_tampering_http FAILED     [  0%]
+tests/integration/test_cart_http.py::test_opa_routing_http FAILED        [  1%]
+tests/integration/test_concurrency.py::test_concurrent_execution[10] FAILED [  1%]
+tests/integration/test_concurrency.py::test_concurrent_execution[50] FAILED [  2%]
+tests/integration/test_concurrency.py::test_concurrent_execution[100] FAILED [  2%]
+tests/integration/test_concurrency.py::test_cross_transaction_execution FAILED [  3%]
+tests/integration/test_concurrency.py::test_payment_unknown_interaction FAILED [  3%]
+tests/integration/test_e2e.py::test_canonical_happy_path FAILED          [  4%]
+tests/integration/test_gateway.py::test_g_01_valid_authorization PASSED  [  4%]
+tests/integration/test_gateway.py::test_g_02_invalid_signature PASSED    [  5%]
+tests/integration/test_gateway.py::test_g_03_hash_mismatch PASSED        [  5%]
+tests/integration/test_gateway.py::test_g_04_expired_mandate PASSED      [  6%]
+tests/integration/test_gateway.py::test_g_05_merchant_untrusted PASSED   [  6%]
+tests/integration/test_gateway.py::test_g_06_replay PASSED               [  7%]
+tests/integration/test_gateway.py::test_g_07_semantic_failure_releases_reservation FAILED [  7%]
+tests/integration/test_gateway.py::test_g_08_policy_denial_releases_reservation PASSED [  8%]
+tests/integration/test_gateway.py::test_g_09_llm_pass_cannot_bypass_opa PASSED [  8%]
+tests/integration/test_gateway.py::test_g_10_opa_denial_blocks_execution PASSED [  9%]
+tests/integration/test_gateway.py::test_g_11_only_committed_authorization_can_execute PASSED [  9%]
+tests/integration/test_gateway.py::test_g_12_execution_token_invalid_before_authorization PASSED [ 10%]
+tests/integration/test_gateway.py::test_g_13_execution_token_single_use PASSED [ 10%]
+tests/integration/test_gateway.py::test_g_14_payment_success PASSED      [ 11%]
+tests/integration/test_gateway.py::test_g_15_payment_failure PASSED      [ 11%]
+tests/integration/test_gateway.py::test_g_16_payment_unknown PASSED      [ 12%]
+tests/integration/test_gateway.py::test_g_17_unknown_reconciliation_success PASSED [ 12%]
+tests/integration/test_gateway.py::test_g_18_unknown_reconciliation_failure PASSED [ 13%]
+tests/integration/test_gateway.py::test_g_19_different_checkout_under_same_mandate FAILED [ 13%]
+tests/integration/test_gateway.py::test_g_20_concurrent_authorization PASSED [ 14%]
+tests/integration/test_gemini_provider.py::test_live_gemini_semantic_pass FAILED [ 14%]
+tests/integration/test_gemini_provider.py::test_live_gemini_semantic_fail PASSED [ 15%]
+tests/integration/test_idempotency_store.py::test_reserve_success ERROR  [ 15%]
+tests/integration/test_idempotency_store.py::test_reserve_semantic_failure_release ERROR [ 16%]
+tests/integration/test_idempotency_store.py::test_reserve_policy_denial_release ERROR [ 16%]
+tests/integration/test_idempotency_store.py::test_reserve_commit ERROR   [ 17%]
+tests/integration/test_idempotency_store.py::test_wrong_tx_cannot_commit ERROR [ 17%]
+tests/integration/test_idempotency_store.py::test_committed_cannot_be_released ERROR [ 18%]
+tests/integration/test_idempotency_store.py::test_tentative_expiry ERROR [ 18%]
+tests/integration/test_idempotency_store.py::test_same_mandate_different_checkouts ERROR [ 19%]
+tests/integration/test_idempotency_store.py::test_concurrent_same_checkout 

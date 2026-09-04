@@ -52,7 +52,7 @@ Result? 180 attacks Blocked, 6 Detected safely. 0 unauthorized payments executed
 **Screen:** Shows OPA returning DENY (BUDGET_EXCEEDED).
 **Narrator:** "OPA deterministically denies the transaction because it exceeds the ₹50,000 budget. Zero payment provider calls are made."
 **Screen:** Shows Audit Ledger recording the blocked attack.
-**Narrator:** "The execution is rejected, the user's money is safe, and the entire attempt is recorded in an immutable hash chain for cryptographic evidence."
+**Narrator:** "The execution is rejected, the user's money is safe, and the entire attempt is recorded in an tamper-evident hash chain for cryptographic evidence."
 
 ---
 
