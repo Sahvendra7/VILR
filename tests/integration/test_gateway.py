@@ -81,7 +81,7 @@ def gateway(mock_verifier, mock_idempotency, mock_semantic, mock_policy, mock_ex
     async def create_token(token, tx_id, auth_data, ttl):
         fake_tokens[token] = {"transaction_id": tx_id, "auth_data": auth_data, "status": "available"}
         
-    async def consume_token(token, tx_id):
+    async def consume_token(token, tx_id, expected_amount, expected_currency, expected_merchant, expected_hash):
         if token not in fake_tokens: raise ValueError("Invalid or expired execution token")
         if fake_tokens[token]["transaction_id"] != tx_id:
             from app.domain.errors import InvalidRequest

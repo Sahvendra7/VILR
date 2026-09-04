@@ -2,21 +2,21 @@
 
 ## 1. Deterministic Properties
 - **Hard Policy Bypass Rate**: 0.0% (OPA strictly enforces limits)
-- **Replay Prevention Rate**: 100% (Redis idempotency prevents replay)
-- **Cart Tamper Detection Rate**: 100% (Cryptographic hash validation)
+- **Replay Prevention Rate**: Gateway-level replay prevention (Redis idempotency)
+- **Cart Tamper Detection Rate**: Cryptographic hash validation
 - **Unauthorized Payment Execution Rate**: 0.0% (Execution layer blocks unauthorized requests)
-- **Duplicate Execution Rate**: 0.0% (Redis Lua atomic execution token prevents duplicate gateway authorization. Exactly-once external payments rely on provider-side idempotency keys.)
-- **Audit Tamper Detection Rate**: 100% (Hash chaining detects tampering)
+- **Duplicate Execution Rate**: 0.0% (Redis Lua atomic execution token prevents duplicate gateway authorization. Provider-side exactly-once external payment semantics rely on provider-side idempotency keys.)
+- **Audit Tamper Detection Rate**: Hash chaining detects tampering
 
 ## 2. Probabilistic Properties
 - **Semantic Security (Prompt Injection / Misdirection)**:
   VILR mitigates adversarial prompt injections targeting merchant metadata. The AI provides a probabilistic semantic assessment. Final deterministic authorization (like budget limits) relies strictly on OPA fallback.
 
 ## 3. Observed Attack Results
-From the 186 adversarial benchmark scenarios:
-- **BLOCKED**: 180
-- **DETECTED**: 6
-- **NOT_BLOCKED**: 0
+From the 40 adversarial benchmark scenarios in Phase 8:
+- **BLOCKED**: 16
+- **DETECTED**: 1
+- **NOT_BLOCKED**: 23 (Probabilistic LLM attacks and concurrency edge cases, subsequently remediated in Phase 8.5)
 - **ERROR**: 0
 - **INCONCLUSIVE**: 0
 

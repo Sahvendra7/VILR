@@ -103,7 +103,7 @@ async def health_check():
         await r.ping()
         await r.close()
     except Exception as e:
-        redis_status = f"error: {str(e)}"
+        redis_status = "unavailable"
 
     opa_status = "ok"
     try:
@@ -111,7 +111,7 @@ async def health_check():
             resp = await client.get(f"{settings.opa_url}/health")
             resp.raise_for_status()
     except Exception as e:
-        opa_status = f"error: {str(e)}"
+        opa_status = "unavailable"
 
     return {
         "status": "ok",

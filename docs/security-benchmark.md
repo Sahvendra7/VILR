@@ -1,17 +1,23 @@
-# Security Benchmark
+# VILR Security Benchmark (Phase 8 Results)
 
-Total attacks: 186
-BLOCKED: 180
-DETECTED: 6
-NOT_BLOCKED: 0
-ERROR: 0
-INCONCLUSIVE: 0
+## 1. Adversarial Results
+Total attacks evaluated: 40
 
-- hard-policy bypass rate: 0.0%
-- unauthorized payment execution rate: 0.0%
-- replay prevention rate: 100%
-- duplicate execution rate: 0.0%
-- cart tamper detection rate: 100%
-- audit tamper detection rate: 100%
-- semantic detection rate: 95%
-- semantic false rejection rate: 2%
+| Classification | Count | Description |
+|---|---|---|
+| **BLOCKED** | 16 | Attack prevented from executing payment (e.g. OPA denial, Redis conflict) |
+| **DETECTED** | 1 | Attack detected and stopped, but reached an intermediate failure state |
+| **NOT_BLOCKED** | 23 | Attack bypassed security controls (Execution Layer Vulnerabilities, Semantic Drifts) |
+| **ERROR** | 0 | Test harness errors |
+| **INCONCLUSIVE** | 0 | Unknown state |
+
+**Security Success Rate:** 42.5% ((16 + 1) / 40)
+
+## 2. Component Efficacy
+- **Gateway-level Replay Prevention:** High reliability (via Redis idempotency)
+- **Duplicate Execution Prevention:** High reliability (via Token consumption atomicity, fixed in Phase 8.5)
+- **Cart Tamper Detection Rate:** High reliability (via JCS Cryptographic hash validation)
+- **Audit Tamper Detection Rate:** High reliability (via in-memory hash chaining)
+
+> [!NOTE]
+> The benchmark is an adversarial instrument. The 23 NOT_BLOCKED attacks explicitly target probabilistic boundaries (LLM prompt injections) and prototype limitations (like concurrent executions that were subsequently remediated in Phase 8.5).

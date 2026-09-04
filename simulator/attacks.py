@@ -227,13 +227,21 @@ register_attack(AttackDefinition(
 
 # T-13 Audit tampering
 async def execute_T13(client: httpx.AsyncClient) -> ExecutionResult:
-
+    from app.main import app
     payload = generator.generate_valid_payload()
     await client.post("/v1/authorize", json=payload)
-    resp = await client.get(f"/v1/audit/{payload['transaction_id']}/verify")
-    if resp.status_code == 200 and resp.json()["valid"] is True:
-        return ExecutionResult(AttackOutcome.DETECTED, resp.status_code) # Normal flow gives TRUE which is what we want, but tampering would fail
+    
+    # Mutate the ledger
+    ledger = app.state.gateway.audit
+    tx_id = payload["transaction_id"]
+    if tx_id in ledger.storage and len(ledger.storage[tx_id]) > 0:
+        ledger.storage[tx_id][0].event_data["tampered"] = True
+        
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json()["valid"] is False:
+        return ExecutionResult(AttackOutcome.DETECTED, resp.status_code, evidence="Tampering detected")
     return ExecutionResult(AttackOutcome.NOT_BLOCKED, resp.status_code)
+
 
 register_attack(AttackDefinition(
     attack_id="T-13", name="Audit tampering", category="Audit",
@@ -466,7 +474,7 @@ async def execute_T28(client: httpx.AsyncClient) -> ExecutionResult:
     return extract_outcome(resp, True)
 
 register_attack(AttackDefinition(
-    attack_id="T-28", name="Unicode / normalization semantic trick", category="Semantic",
+    attack_id="T-28", name="Unicode / normalization semantic trick", category="Robustness",
     attacker="Attacker", preconditions="Valid signatures",
     malicious_input="Trick LLM", attack_path="various", expected_security_property="Blocked",
     expected_result=AttackOutcome.DETECTED, defense_layer="Semantic Verifier", severity=Severity.MEDIUM,
@@ -481,7 +489,7 @@ async def execute_T29(client: httpx.AsyncClient) -> ExecutionResult:
     return extract_outcome(resp, True)
 
 register_attack(AttackDefinition(
-    attack_id="T-29", name="Very long merchant description", category="Availability",
+    attack_id="T-29", name="Very long merchant description", category="Robustness",
     attacker="Attacker", preconditions="Valid signatures",
     malicious_input="Long string", attack_path="various", expected_security_property="Blocked",
     expected_result=AttackOutcome.BLOCKED, defense_layer="API Validation", severity=Severity.LOW,
@@ -490,13 +498,17 @@ register_attack(AttackDefinition(
 
 # T-30 Large cart / resource exhaustion
 async def execute_T30(client: httpx.AsyncClient) -> ExecutionResult:
-
     payload = generator.generate_valid_payload()
+    payload["cart"]["line_items"] = [{"id": f"item_{i}", "name": "Bulk Item", "price": "1.00"} for i in range(500)]
+    # Needs a valid cart hash for the new large cart, but wait, generator generates a signature for the ORIGINAL cart!
+    # Let's just generate the payload with the large cart properly!
+    payload = generator.generate_valid_payload({"line_items": [{"id": f"item_{i}", "name": "Bulk Item", "price": "1.00"} for i in range(500)]})
     resp = await client.post("/v1/authorize", json=payload)
     return extract_outcome(resp, True)
 
+
 register_attack(AttackDefinition(
-    attack_id="T-30", name="Large cart / resource exhaustion", category="Availability",
+    attack_id="T-30", name="Large cart / resource exhaustion", category="Robustness",
     attacker="Attacker", preconditions="Valid signatures",
     malicious_input="Big cart", attack_path="various", expected_security_property="Blocked",
     expected_result=AttackOutcome.BLOCKED, defense_layer="API Validation", severity=Severity.LOW,
@@ -511,7 +523,7 @@ async def execute_T31(client: httpx.AsyncClient) -> ExecutionResult:
     return extract_outcome(resp, True)
 
 register_attack(AttackDefinition(
-    attack_id="T-31", name="Malformed nested JSON", category="API",
+    attack_id="T-31", name="Malformed nested JSON", category="Robustness",
     attacker="Attacker", preconditions="Valid signatures",
     malicious_input="Bad JSON", attack_path="various", expected_security_property="Blocked",
     expected_result=AttackOutcome.BLOCKED, defense_layer="API Validation", severity=Severity.LOW,
@@ -580,10 +592,18 @@ register_attack(AttackDefinition(
 
 # T-36 Tampered audit record
 async def execute_T36(client: httpx.AsyncClient) -> ExecutionResult:
-
+    from app.main import app
     payload = generator.generate_valid_payload()
-    resp = await client.post("/v1/authorize", json=payload)
-    return extract_outcome(resp, True)
+    await client.post("/v1/authorize", json=payload)
+    ledger = app.state.gateway.audit
+    tx_id = payload["transaction_id"]
+    if tx_id in ledger.storage and len(ledger.storage[tx_id]) > 0:
+        ledger.storage[tx_id][0].event_data["amount"] = 999999
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json()["valid"] is False:
+        return ExecutionResult(AttackOutcome.DETECTED, resp.status_code)
+    return ExecutionResult(AttackOutcome.NOT_BLOCKED, resp.status_code)
+
 
 register_attack(AttackDefinition(
     attack_id="T-36", name="Tampered audit record", category="Audit",
@@ -595,10 +615,18 @@ register_attack(AttackDefinition(
 
 # T-37 Deleted audit record
 async def execute_T37(client: httpx.AsyncClient) -> ExecutionResult:
-
+    from app.main import app
     payload = generator.generate_valid_payload()
-    resp = await client.post("/v1/authorize", json=payload)
-    return extract_outcome(resp, True)
+    await client.post("/v1/authorize", json=payload)
+    ledger = app.state.gateway.audit
+    tx_id = payload["transaction_id"]
+    if tx_id in ledger.storage and len(ledger.storage[tx_id]) > 1:
+        del ledger.storage[tx_id][0] # Delete first record
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json()["valid"] is False:
+        return ExecutionResult(AttackOutcome.DETECTED, resp.status_code)
+    return ExecutionResult(AttackOutcome.NOT_BLOCKED, resp.status_code)
+
 
 register_attack(AttackDefinition(
     attack_id="T-37", name="Deleted audit record", category="Audit",
@@ -610,10 +638,18 @@ register_attack(AttackDefinition(
 
 # T-38 Reordered audit record
 async def execute_T38(client: httpx.AsyncClient) -> ExecutionResult:
-
+    from app.main import app
     payload = generator.generate_valid_payload()
-    resp = await client.post("/v1/authorize", json=payload)
-    return extract_outcome(resp, True)
+    await client.post("/v1/authorize", json=payload)
+    ledger = app.state.gateway.audit
+    tx_id = payload["transaction_id"]
+    if tx_id in ledger.storage and len(ledger.storage[tx_id]) > 1:
+        ledger.storage[tx_id][0], ledger.storage[tx_id][1] = ledger.storage[tx_id][1], ledger.storage[tx_id][0]
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json()["valid"] is False:
+        return ExecutionResult(AttackOutcome.DETECTED, resp.status_code)
+    return ExecutionResult(AttackOutcome.NOT_BLOCKED, resp.status_code)
+
 
 register_attack(AttackDefinition(
     attack_id="T-38", name="Reordered audit record", category="Audit",
@@ -625,10 +661,18 @@ register_attack(AttackDefinition(
 
 # T-39 Broken prev_record_hash
 async def execute_T39(client: httpx.AsyncClient) -> ExecutionResult:
-
+    from app.main import app
     payload = generator.generate_valid_payload()
-    resp = await client.post("/v1/authorize", json=payload)
-    return extract_outcome(resp, True)
+    await client.post("/v1/authorize", json=payload)
+    ledger = app.state.gateway.audit
+    tx_id = payload["transaction_id"]
+    if tx_id in ledger.storage and len(ledger.storage[tx_id]) > 1:
+        ledger.storage[tx_id][1].prev_record_hash = "fake_hash"
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json()["valid"] is False:
+        return ExecutionResult(AttackOutcome.DETECTED, resp.status_code)
+    return ExecutionResult(AttackOutcome.NOT_BLOCKED, resp.status_code)
+
 
 register_attack(AttackDefinition(
     attack_id="T-39", name="Broken prev_record_hash", category="Audit",

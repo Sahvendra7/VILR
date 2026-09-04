@@ -1,12 +1,17 @@
-# Performance Benchmark (1000 iterations)
+# Performance Benchmark
 
-| Component | P50 (ms) | P95 (ms) | P99 (ms) |
-|-----------|----------|----------|----------|
-| JCS + SHA-256 | 0.8 | 1.2 | 2.5 |
-| ECDSA Verify | 2.1 | 3.5 | 5.2 |
-| Redis Reserve | 1.1 | 1.8 | 3.0 |
-| OPA Evaluate | 5.5 | 7.4 | 10.6 |
-| LLM Semantic | 850.0 | 1200.0 | 2500.0 |
-| Audit Write | 2.0 | 3.2 | 4.8 |
+## 1. Environment
+- Component-level measurements in local Python runtime (100 iterations)
 
-*Deterministic gateway latency (excluding LLM): ~10ms.*
+## 2. Component Performance Breakdown (Measured)
+
+| Component | P50 | P95 | P99 |
+|---|---|---|---|
+| Crypto Verifier (JCS + ECDSA) | 0.18 ms | 0.51 ms | 0.53 ms |
+| Idempotency (Fakeredis memory) | 0.00 ms | 0.00 ms | 0.00 ms |
+| Semantic AI (Mock Provider) | 0.02 ms | 0.05 ms | 3.16 ms |
+| OPA Policy (HTTP Timeout expected) | 3.06 ms | 6.41 ms | 21.31 ms |
+| Audit Ledger (In-Memory) | 0.05 ms | 0.14 ms | 0.28 ms |
+
+> [!NOTE]
+> These are isolated component measurements, not end-to-end network latencies. Production latencies will vary significantly based on physical network distance to Redis, OPA, and the LLM API.

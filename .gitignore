@@ -8,3 +8,7 @@ __pycache__/
 venv/
 vilr.egg-info/
 *.pyc
+
+.env
+results/
+*.log

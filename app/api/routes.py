@@ -12,9 +12,7 @@ from app.api.deps import get_gateway
 
 router = APIRouter(prefix="/v1")
 
-@router.post("/intents", response_model=IntentResponse)
-async def create_intent(req: IntentRequest):
-    return IntentResponse(status="SUCCESS", message="Intent normalized successfully")
+
 
 @router.post("/authorize", response_model=AuthorizeResponse)
 async def authorize_transaction(req: AuthorizeRequest, gateway = Depends(get_gateway)):
@@ -46,9 +44,7 @@ async def execute_transaction(req: ExecuteRequest, gateway = Depends(get_gateway
         receipt=result
     )
 
-@router.post("/verify", response_model=VerifyResponse)
-async def verify_transaction(req: VerifyRequest):
-    return VerifyResponse(transaction_id=req.transaction_id, status="SUCCESS", isValid=True)
+
 
 @router.get("/audit/{transaction_id}")
 async def get_audit(transaction_id: str, gateway = Depends(get_gateway)):

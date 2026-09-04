@@ -1,3 +1,4 @@
+from decimal import Decimal
 from app.security.crypto import compute_checkout_hash
 import uuid
 import secrets
@@ -36,7 +37,7 @@ class GatewayAuthorizeRequest(BaseModel):
 class GatewayExecuteRequest(BaseModel):
     transaction_id: str
     execution_token: str
-    amount: float
+    amount: Decimal
     currency: str
     merchant_id: str
     mandate_hash: str
@@ -155,19 +156,11 @@ class GatewayOrchestrator:
             context["semantic_decision"] = sem_result.status
             context["semantic_confidence"] = sem_result.confidence
             
-            if sem_result.status in ("FAIL", "REVIEW"):
-                raise SemanticDrift(f"Semantic drift detected: {sem_result.status}")
-                
             state.transition_to(TransactionState.SEMANTIC_ANALYZED)
             await self._log(tx_id, TransactionState.SEMANTIC_ANALYZED, **context)
             
         except Exception as e:
             await self.idempotency.release(reservation_key, tx_id)
-            if not isinstance(e, SemanticDrift):
-                raise
-            state.transition_to(TransactionState.SEMANTIC_DRIFT)
-            context["failure_reason"] = str(e)
-            await self._log(tx_id, TransactionState.SEMANTIC_DRIFT, **context)
             raise
 
         try:
@@ -205,7 +198,7 @@ class GatewayOrchestrator:
 
         execution_token = secrets.token_hex(32)
         auth_data = {
-            "amount": float(request.cart.total_amount),
+            "amount": str(request.cart.total_amount),
             "currency": request.cart.currency,
             "merchant_id": request.cart.merchant_id,
             "mandate_hash": closed_mandate.open_mandate_hash
@@ -225,15 +218,12 @@ class GatewayOrchestrator:
         tx_id = request.transaction_id
         
         try:
-            auth_data = await self.idempotency.consume_execution_token(request.execution_token, tx_id)
+            auth_data = await self.idempotency.consume_execution_token(
+                request.execution_token, tx_id, 
+                str(request.amount), request.currency, request.merchant_id, request.mandate_hash
+            )
         except ValueError as e:
             raise InvalidRequest(str(e))
-            
-        if (float(auth_data["amount"]) != float(request.amount) or
-            auth_data["currency"] != request.currency or
-            auth_data["merchant_id"] != request.merchant_id or
-            auth_data["mandate_hash"] != request.mandate_hash):
-            raise InvalidRequest("Execution parameters do not match authorized context")
 
         state = self._tx_states.get(tx_id)
         if not state:

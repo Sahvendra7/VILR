@@ -123,21 +123,21 @@ flowchart TD
 - **Input**: An attacker intercepts the payload and changes the cart total from ₹47,999 to ₹97,999 while keeping the signatures the same.
 - **Exploit Path**: The modified payload is sent to VILR.
 - **Expected Defense**: The cryptographic verifier recomputes the JCS-canonicalized SHA-256 hash of the cart and compares it against the `checkout_hash` in the closed mandate. Any modification causes a hash mismatch.
-- **Defense Layer**: Cryptographic Verifier (deterministic, 100% detection).
+- **Defense Layer**: Cryptographic Verifier (deterministic, high reliability).
 - **Audit Evidence**: Hash mismatch logged in the ledger with expected vs. actual hash values.
 
 ### 4. Replay of Valid Mandate (T-04)
 - **Input**: An attacker captures a successful VILR transaction payload and resubmits it.
 - **Exploit Path**: The payload has valid signatures and unexpired timestamps.
 - **Expected Defense**: VILR checks the composite idempotency key (`open_mandate_hash:checkout_hash`) in Redis. The reservation was already committed for this checkout.
-- **Defense Layer**: Redis idempotency store (deterministic, 100% detection).
+- **Defense Layer**: Redis idempotency store (deterministic, high reliability).
 - **Audit Evidence**: "REPLAY_DETECTED" logged with the original transaction_id.
 
 ### 5. Over-budget Transaction (T-05)
 - **Input**: A valid mandate with a ₹50,000 limit is submitted with a cart totaling ₹55,000.
 - **Exploit Path**: Agent or merchant attempts to authorize a higher amount.
 - **Expected Defense**: OPA deterministically compares the cart total against the mandate's `max_amount` constraint and denies the request.
-- **Defense Layer**: OPA Policy Engine (deterministic, 100% detection).
+- **Defense Layer**: OPA Policy Engine (deterministic, high reliability).
 - **Audit Evidence**: OPA denial reason `BUDGET_EXCEEDED` logged with amount details.
 
 ## 5. Security Review Checklist

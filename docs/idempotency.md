@@ -4,7 +4,7 @@ This document outlines the idempotency and replay protection mechanisms inside V
 
 ## Why Redis?
 VILR uses Redis to manage a high-performance, atomic, distributed lock system for transaction authorization. It provides race-free, two-phase authorization reservations.
-**Crucially: Redis does not guarantee exactly-once external payment execution.** Provider-side payment idempotency is handled independently by passing a provider-specific idempotency key during the execution phase. Redis simply ensures the gateway itself evaluates and authorizes a checkout exactly once.
+**Crucially: Redis does not guarantee exactly-once external payment execution.** Provider-side payment idempotency is handled independently by passing a provider-specific idempotency key during the execution phase. Redis simply ensures the gateway itself evaluates and authorizes a checkout at most once.
 
 ## Composite Key
 The canonical idempotency key is a composite of the open mandate hash and the specific checkout hash:
@@ -42,5 +42,5 @@ If Redis is unavailable, VILR **fails closed**.
 It immediately rejects the request with an HTTP 503 equivalent (`IdempotencyUnavailable`). It will NOT fall back to processing without a reservation, as that would risk concurrent duplicate executions.
 
 ## Gateway Reservation vs. Provider Idempotency
-- **Gateway Reservation**: Ensures VILR evaluates policy and semantically analyzes the intent exactly once.
-- **Provider Idempotency**: Ensures the Payment Provider charges the user exactly once, even in the event of `PAYMENT_UNKNOWN` timeouts and retries.
+- **Gateway Reservation**: Ensures VILR evaluates policy and semantically analyzes the intent at most once.
+- **Provider Idempotency**: Ensures the Payment Provider charges the user at most once, even in the event of `PAYMENT_UNKNOWN` timeouts and retries.

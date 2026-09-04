@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 from app.domain.models import UserIntent, Cart, AuditRecord, Identifier
@@ -35,7 +36,7 @@ class AuthorizeResponse(BaseModel):
 class ExecuteRequest(BaseModel):
     transaction_id: Identifier
     execution_token: str
-    amount: float
+    amount: Decimal
     currency: str
     merchant_id: str
     mandate_hash: str

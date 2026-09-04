@@ -9,7 +9,7 @@
 ## 2-Minute Technical Explanation
 "If we look at an unprotected agent, a single prompt injection can drain a user's wallet. If we add basic rules, agents still get tricked by manipulated carts. VILR fixes this via a multi-layered trust boundary. 
 
-First, we use RFC 8785 JSON canonicalization to ensure the cart hasn't been tampered with. Second, we isolate the LLM—it only provides probabilistic *evidence* about whether a 'gaming rig' matches the intent of a 'laptop'. Third, an Open Policy Agent strictly enforces the financial rules: even if the AI is tricked into giving a 99% PASS, if the cart is $1 over budget, OPA kills it. Finally, Redis ensures the transaction fires exactly once at the gateway level. It’s a zero-trust architecture tailored specifically for the age of autonomous agentic payments, ensuring unauthorized payment execution remains at 0%."
+First, we use RFC 8785 JSON canonicalization to ensure the cart hasn't been tampered with. Second, we isolate the LLM—it only provides probabilistic *evidence* about whether a 'gaming rig' matches the intent of a 'laptop'. Third, an Open Policy Agent strictly enforces the financial rules: even if the AI is tricked into giving a 99% PASS, if the cart is $1 over budget, OPA kills it. Finally, Redis ensures the transaction fires safely authorized and protected against concurrency at the gateway level. It’s a zero-trust architecture tailored specifically for the age of autonomous agentic payments, ensuring unauthorized payment execution remains at 0%."
 
 ## 5-Minute Complete Presentation
 

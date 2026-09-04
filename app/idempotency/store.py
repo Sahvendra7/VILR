@@ -26,12 +26,23 @@ return "OK"
 LUA_CONSUME_EXEC_TOKEN = """
 local key = KEYS[1]
 local tx_id = ARGV[1]
+local expected_amount = ARGV[2]
+local expected_currency = ARGV[3]
+local expected_merchant = ARGV[4]
+local expected_hash = ARGV[5]
+
 local current = redis.call("GET", key)
 if not current then return "NOT_FOUND" end
 local data = cjson.decode(current)
 if data.transaction_id ~= tx_id then return "OWNERSHIP_FAILURE" end
 if data.status == "consumed" then return "ALREADY_CONSUMED" end
 if data.status ~= "available" then return "INVALID_STATE" end
+
+if tostring(data.auth_data.amount) ~= expected_amount then return "PARAM_MISMATCH" end
+if data.auth_data.currency ~= expected_currency then return "PARAM_MISMATCH" end
+if data.auth_data.merchant_id ~= expected_merchant then return "PARAM_MISMATCH" end
+if data.auth_data.mandate_hash ~= expected_hash then return "PARAM_MISMATCH" end
+
 data.status = "consumed"
 redis.call("SET", key, cjson.encode(data), "KEEPTTL")
 return cjson.encode(data.auth_data)
@@ -148,9 +159,9 @@ class RedisIdempotencyStore(IdempotencyStore):
         })
         await self.client.set(key, val, ex=ttl_seconds, nx=True)
 
-    async def consume_execution_token(self, token: str, transaction_id: str) -> dict:
+    async def consume_execution_token(self, token: str, transaction_id: str, expected_amount: str, expected_currency: str, expected_merchant: str, expected_hash: str) -> dict:
         key = f"vilr:exec_token:{token}"
-        result = await self._consume_script(keys=[key], args=[transaction_id])
+        result = await self._consume_script(keys=[key], args=[transaction_id, str(expected_amount), expected_currency, expected_merchant, expected_hash])
         result_str = result.decode("utf-8") if isinstance(result, bytes) else result
         
         if result_str == "NOT_FOUND":
@@ -161,6 +172,9 @@ class RedisIdempotencyStore(IdempotencyStore):
         elif result_str == "ALREADY_CONSUMED":
             from app.domain.errors import DuplicateExecution
             raise DuplicateExecution("Execution token already consumed")
+        elif result_str == "PARAM_MISMATCH":
+            from app.domain.errors import InvalidRequest
+            raise InvalidRequest("Execution parameters do not match authorized context")
         elif result_str == "INVALID_STATE":
             raise ValueError("Invalid token state")
             
