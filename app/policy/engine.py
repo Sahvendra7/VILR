@@ -43,15 +43,15 @@ class OPAPolicyEngine(PolicyEngine):
                 # OPA wraps the return in a "result" key
                 response_json = response.json()
                 result = response_json.get("result", {})
-                
+
                 # If the policy evaluated successfully but result is empty, it means default deny
                 if not result:
                     result = {"allow": False, "violations": [{"code": "POLICY_DEFAULT_DENY", "message": "Policy engine returned no decision"}], "policy_version": "unknown"}
-                
+
                 return AuthorizationDecision(
                     allowed=result.get("allow", False),
                     violations=[
-                        {"code": v.get("code"), "message": v.get("message")} 
+                        {"code": v.get("code"), "message": v.get("message")}
                         for v in result.get("violations", [])
                     ],
                     policy_version=result.get("policy_version", "unknown"),

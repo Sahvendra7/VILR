@@ -49,14 +49,14 @@ class PaymentExecutor:
 
         if not hasattr(self.provider, "get_payment_status"):
             raise NotImplementedError("Provider does not support get_payment_status")
-            
+
         receipt = await self.provider.get_payment_status(idempotency_key)
         if not receipt:
             return None
-            
+
         if receipt.status == "SUCCESS":
             state_controller.transition_to(TransactionState.PAYMENT_CONFIRMED)
         elif receipt.status == "FAILED":
             state_controller.transition_to(TransactionState.PAYMENT_FAILED)
-            
+
         return receipt

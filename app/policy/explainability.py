@@ -20,7 +20,7 @@ class DeterministicPolicyExplainer:
 
         violation = decision.violations[0] if decision.violations else {"code": "UNKNOWN", "message": "Authorization denied by policy."}
         code = violation.get("code")
-        
+
         rule = "unknown"
         expected = "unknown"
         actual = "unknown"

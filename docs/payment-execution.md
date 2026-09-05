@@ -40,5 +40,5 @@ A confirmed failure from the provider (e.g., `INSUFFICIENT_FUNDS`) is terminal. 
 ## Execution Boundaries & Mock Limitations
 - The current `MockRazorpayProvider` simulates execution using a simple in-memory dictionary and `asyncio.Lock()`.
 - It does not persist across application restarts.
-- It is a simulation for testing the VILR security boundary; it is not the real Razorpay API.
+- It is a simulation for testing the VILR security boundary; it is not the Razorpay TEST/Sandbox API.
 - The `PaymentExecutor` is deliberately decoupled from the gateway orchestrator (Phase 7). The orchestration layer must securely bind the AP2 verification pipeline to the executor.

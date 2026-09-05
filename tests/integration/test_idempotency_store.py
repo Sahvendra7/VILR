@@ -25,14 +25,14 @@ def gen_key():
 async def test_reserve_success(store):
     key = gen_key()
     assert await store.try_reserve(key, "tx_1") == True
-    
+
     # ID-10: Wrong transaction cannot release
     with pytest.raises(IdempotencyOwnershipFailure):
         await store.release(key, "tx_wrong")
-        
+
     # Owner can release
     await store.release(key, "tx_1")
-    
+
     # Can reserve again
     assert await store.try_reserve(key, "tx_2") == True
 
@@ -96,7 +96,7 @@ async def test_same_mandate_different_checkouts(store):
     m_hash = "mandate_1"
     key1 = build_idempotency_key(m_hash, "checkout_A")
     key2 = build_idempotency_key(m_hash, "checkout_B")
-    
+
     assert await store.try_reserve(key1, "tx_1") == True
     assert await store.try_reserve(key2, "tx_2") == True
 
@@ -104,12 +104,12 @@ async def test_same_mandate_different_checkouts(store):
 async def test_concurrent_same_checkout(store):
     # ID-15 & Attack A & ID-18/19 style race
     key = gen_key()
-    
+
     async def worker(i):
         return await store.try_reserve(key, f"tx_{i}")
-        
+
     results = await asyncio.gather(*(worker(i) for i in range(50)))
-    
+
     # Exactly one winner
     assert results.count(True) == 1
     assert results.count(False) == 49
@@ -120,7 +120,7 @@ async def test_redis_unavailable():
     # Point to a wrong port
     bad_client = redis.Redis(host='localhost', port=9999, socket_connect_timeout=0.1)
     bad_store = RedisIdempotencyStore(bad_client)
-    
+
     with pytest.raises(IdempotencyUnavailable):
         await bad_store.try_reserve(gen_key(), "tx_1")
 
@@ -129,7 +129,7 @@ async def test_malformed_reservation(store, redis_client):
     # ID-17
     key = gen_key()
     await redis_client.set(key, "not_json")
-    
+
     is_reserved, status = await store.is_reserved_or_committed(key)
     assert is_reserved == True
     assert status == "unknown"
@@ -139,7 +139,7 @@ async def test_transaction_id_collision_different_keys(store):
     # ID-20
     key1 = build_idempotency_key("m1", "c1")
     key2 = build_idempotency_key("m1", "c2")
-    
+
     assert await store.try_reserve(key1, "tx_duplicate") == True
     assert await store.try_reserve(key2, "tx_duplicate") == True
 
@@ -148,12 +148,12 @@ async def test_is_reserved_or_committed(store):
     key = gen_key()
     res, stat = await store.is_reserved_or_committed(key)
     assert res == False
-    
+
     await store.try_reserve(key, "tx_1")
     res, stat = await store.is_reserved_or_committed(key)
     assert res == True
     assert stat == "reserved"
-    
+
     await store.commit(key, "tx_1")
     res, stat = await store.is_reserved_or_committed(key)
     assert res == True

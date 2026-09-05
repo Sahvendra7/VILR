@@ -55,12 +55,12 @@ class MemoryAuditLedger(AuditLedger):
         for i, rec in enumerate(records):
             if rec.prev_record_hash != expected_prev:
                 return {"valid": False, "broken_at": i, "reason": "PREV_HASH_MISMATCH"}
-            
+
             canonical = self._canonicalize(rec.model_dump(mode='json'))
             computed_hash = self._hash(canonical)
             if computed_hash != rec.record_hash:
                 return {"valid": False, "broken_at": i, "reason": "RECORD_HASH_MISMATCH"}
-            
+
             expected_prev = computed_hash
 
         return {"valid": True, "records_checked": len(records), "broken_at": None}

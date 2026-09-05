@@ -137,9 +137,9 @@ async def execute_T08(client: httpx.AsyncClient) -> ExecutionResult:
     if r.status_code != 200: return ExecutionResult(DecisionOutcome.ERROR, SideEffectOutcome.UNKNOWN, r.status_code, error='Setup failed', outcome=AttackOutcome.ERROR)
     token = r.json()["execution_token"]
     exe_payload = {
-        "transaction_id": payload["transaction_id"], 
+        "transaction_id": payload["transaction_id"],
         "execution_token": token,
-        "amount": 45000.00,
+        "amount": "45000.00",
         "currency": "INR",
         "merchant_id": payload["cart"]["merchant_id"],
         "mandate_hash": jwt.decode(payload["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"],
@@ -154,7 +154,7 @@ async def execute_T08(client: httpx.AsyncClient) -> ExecutionResult:
     successes = [r for r in resps if r.status_code == 200]
     if len(successes) == 1: return ExecutionResult(DecisionOutcome.DENY, SideEffectOutcome.UNKNOWN, 409, outcome=AttackOutcome.BLOCKED)
     return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.UNKNOWN, resps[0].status_code, outcome=AttackOutcome.NOT_BLOCKED)
-    
+
 
 register_attack(AttackDefinition(
     attack_id="T-08", name="Concurrent duplicate execution", category="Concurrency",
@@ -230,13 +230,24 @@ async def execute_T13(client: httpx.AsyncClient) -> ExecutionResult:
     from app.main import app
     payload = generator.generate_valid_payload()
     await client.post("/v1/authorize", json=payload)
-    
+
     # Mutate the ledger
     ledger = app.state.gateway.audit
     tx_id = payload["transaction_id"]
-    if tx_id in ledger._store and len(ledger._store[tx_id]) > 0:
-        ledger._store[tx_id][0].event_data["tampered"] = True
-        
+
+    if hasattr(ledger, '_store'):
+        if hasattr(ledger, '_store') and tx_id in ledger._store and len(ledger._store[tx_id]) > 0:
+            ledger._store[tx_id][0].state = "TAMPERED"
+    else:
+        # Supabase tampering
+        import asyncio
+        resp = await asyncio.to_thread(ledger.client.table("audit_ledger").select("*").eq("transaction_id", tx_id).order("id").execute)
+        if resp.data and len(resp.data) > 0:
+            row = resp.data[0]
+            rec_id = row["id"]
+            row["record"]["state"] = "TAMPERED"
+            await asyncio.to_thread(ledger.client.table("audit_ledger").update({"record": row["record"]}).eq("id", rec_id).execute)
+
     resp = await client.get(f"/v1/audit/{tx_id}/verify")
     if resp.status_code == 200 and resp.json()["valid"] is False:
         return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.UNKNOWN, resp.status_code, evidence="Tampering detected", outcome=AttackOutcome.DETECTED)
@@ -376,9 +387,14 @@ register_attack(AttackDefinition(
 async def execute_T22(client: httpx.AsyncClient) -> ExecutionResult:
 
     payload = generator.generate_valid_payload()
+    # First request
+    resp1 = await client.post("/v1/authorize", json=payload)
+    if resp1.status_code != 200: return extract_outcome(resp1, True)
+
+    # Second request with same checkout but new tx_id
     payload["transaction_id"] = "new_tx_id_for_replay"
-    resp = await client.post("/v1/authorize", json=payload)
-    return extract_outcome(resp, True)
+    resp2 = await client.post("/v1/authorize", json=payload)
+    return extract_outcome(resp2, True)
 
 register_attack(AttackDefinition(
     attack_id="T-22", name="Replay with new transaction_id but same checkout", category="Replay",
@@ -408,9 +424,26 @@ register_attack(AttackDefinition(
 async def execute_T24(client: httpx.AsyncClient) -> ExecutionResult:
 
     payload = generator.generate_valid_payload()
-    payload["transaction_id"] = "tx_24"
+    # 1. Authorize tx A
     resp = await client.post("/v1/authorize", json=payload)
-    return extract_outcome(resp, True)
+    if resp.status_code != 200: return extract_outcome(resp, True)
+
+    token = resp.json()["execution_token"]
+
+    # 2. Try to execute tx B with tx A's token
+    exe_payload = {
+        "transaction_id": "tx_B_stealing_token",
+        "execution_token": token,
+        "amount": payload["cart"]["total_amount"],
+        "currency": payload["cart"]["currency"],
+        "merchant_id": payload["cart"]["merchant_id"],
+        "mandate_hash": "some_hash",
+        "provider_idempotency_key": "idem-123",
+        "payment_method_id": "pm-123"
+    }
+
+    resp2 = await client.post("/v1/execute", json=exe_payload)
+    return extract_outcome(resp2, True)
 
 register_attack(AttackDefinition(
     attack_id="T-24", name="Attempt to commit another transaction's Redis reservation", category="Concurrency",
@@ -484,7 +517,8 @@ register_attack(AttackDefinition(
 # T-29 Very long merchant description
 async def execute_T29(client: httpx.AsyncClient) -> ExecutionResult:
 
-    payload = generator.generate_valid_payload({"merchant_description": "A" * 10000})
+    payload = generator.generate_valid_payload()
+    payload["cart"]["merchant_id"] = "A" * 10000
     resp = await client.post("/v1/authorize", json=payload)
     return extract_outcome(resp, True)
 
@@ -499,10 +533,7 @@ register_attack(AttackDefinition(
 # T-30 Large cart / resource exhaustion
 async def execute_T30(client: httpx.AsyncClient) -> ExecutionResult:
     payload = generator.generate_valid_payload()
-    payload["cart"]["line_items"] = [{"id": f"item_{i}", "name": "Bulk Item", "price": "1.00"} for i in range(500)]
-    # Needs a valid cart hash for the new large cart, but wait, generator generates a signature for the ORIGINAL cart!
-    # Let's just generate the payload with the large cart properly!
-    payload = generator.generate_valid_payload({"line_items": [{"id": f"item_{i}", "name": "Bulk Item", "price": "1.00"} for i in range(500)]})
+    payload["cart"]["items"] = [{"item_id": f"item_{i}", "name": "Bulk Item", "quantity": 1, "unit_price": "1.00", "currency": "INR", "category": "Electronics"} for i in range(500)]
     resp = await client.post("/v1/authorize", json=payload)
     return extract_outcome(resp, True)
 
@@ -579,6 +610,7 @@ register_attack(AttackDefinition(
 async def execute_T35(client: httpx.AsyncClient) -> ExecutionResult:
 
     payload = generator.generate_valid_payload()
+    payload["cart"]["total_amount"] = {"value": 5000}
     resp = await client.post("/v1/authorize", json=payload)
     return extract_outcome(resp, True)
 
@@ -597,13 +629,13 @@ async def execute_T36(client: httpx.AsyncClient) -> ExecutionResult:
     await client.post("/v1/authorize", json=payload)
     ledger = app.state.gateway.audit
     tx_id = payload["transaction_id"]
-    if tx_id in ledger._store and len(ledger._store[tx_id]) > 0:
-        ledger._store[tx_id][0].merchant_id = "tampered"
-    resp = await client.get(f"/v1/audit/{tx_id}/verify")
-    if resp.status_code == 200 and resp.json()["valid"] is False:
-        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.DETECTED)
-    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.NOT_BLOCKED)
+    if hasattr(ledger, '_store') and tx_id in ledger._store and len(ledger._store[tx_id]) > 0:
+        ledger._store[tx_id][0].state = "TAMPERED"
 
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json().get("valid") is False:
+        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.NONE, resp.status_code, evidence="Tampering detected")
+    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.NONE, resp.status_code)
 
 register_attack(AttackDefinition(
     attack_id="T-36", name="Tampered audit record", category="Audit",
@@ -620,13 +652,13 @@ async def execute_T37(client: httpx.AsyncClient) -> ExecutionResult:
     await client.post("/v1/authorize", json=payload)
     ledger = app.state.gateway.audit
     tx_id = payload["transaction_id"]
-    if tx_id in ledger._store and len(ledger._store[tx_id]) > 1:
-        del ledger._store[tx_id][0] # Delete first record
-    resp = await client.get(f"/v1/audit/{tx_id}/verify")
-    if resp.status_code == 200 and resp.json()["valid"] is False:
-        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.DETECTED)
-    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.NOT_BLOCKED)
+    if hasattr(ledger, '_store') and tx_id in ledger._store and len(ledger._store[tx_id]) > 1:
+        ledger._store[tx_id].pop(0)
 
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json().get("valid") is False:
+        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.NONE, resp.status_code, evidence="Deletion detected")
+    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.NONE, resp.status_code)
 
 register_attack(AttackDefinition(
     attack_id="T-37", name="Deleted audit record", category="Audit",
@@ -640,16 +672,21 @@ register_attack(AttackDefinition(
 async def execute_T38(client: httpx.AsyncClient) -> ExecutionResult:
     from app.main import app
     payload = generator.generate_valid_payload()
-    await client.post("/v1/authorize", json=payload)
+    resp1 = await client.post("/v1/authorize", json=payload)
+    token = resp1.json().get("execution_token")
+    if token:
+        exe_payload = {"transaction_id": payload["transaction_id"], "execution_token": token, "amount": payload["cart"]["total_amount"], "currency": "INR", "merchant_id": payload["cart"]["merchant_id"], "mandate_hash": "dummy", "provider_idempotency_key": "idem-123", "payment_method_id": "pm-123"}
+        await client.post("/v1/execute", json=exe_payload)
+
     ledger = app.state.gateway.audit
     tx_id = payload["transaction_id"]
-    if tx_id in ledger._store and len(ledger._store[tx_id]) > 1:
+    if hasattr(ledger, '_store') and tx_id in ledger._store and len(ledger._store[tx_id]) > 1:
         ledger._store[tx_id][0], ledger._store[tx_id][1] = ledger._store[tx_id][1], ledger._store[tx_id][0]
-    resp = await client.get(f"/v1/audit/{tx_id}/verify")
-    if resp.status_code == 200 and resp.json()["valid"] is False:
-        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.DETECTED)
-    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.NOT_BLOCKED)
 
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json().get("valid") is False:
+        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.NONE, resp.status_code, evidence="Reorder detected")
+    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.NONE, resp.status_code)
 
 register_attack(AttackDefinition(
     attack_id="T-38", name="Reordered audit record", category="Audit",
@@ -663,16 +700,21 @@ register_attack(AttackDefinition(
 async def execute_T39(client: httpx.AsyncClient) -> ExecutionResult:
     from app.main import app
     payload = generator.generate_valid_payload()
-    await client.post("/v1/authorize", json=payload)
+    resp1 = await client.post("/v1/authorize", json=payload)
+    token = resp1.json().get("execution_token")
+    if token:
+        exe_payload = {"transaction_id": payload["transaction_id"], "execution_token": token, "amount": payload["cart"]["total_amount"], "currency": "INR", "merchant_id": payload["cart"]["merchant_id"], "mandate_hash": "dummy", "provider_idempotency_key": "idem-123", "payment_method_id": "pm-123"}
+        await client.post("/v1/execute", json=exe_payload)
+
     ledger = app.state.gateway.audit
     tx_id = payload["transaction_id"]
-    if tx_id in ledger._store and len(ledger._store[tx_id]) > 1:
-        ledger._store[tx_id][1].prev_record_hash = "fake_hash"
-    resp = await client.get(f"/v1/audit/{tx_id}/verify")
-    if resp.status_code == 200 and resp.json()["valid"] is False:
-        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.DETECTED)
-    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.NOT_BLOCKED)
+    if hasattr(ledger, '_store') and tx_id in ledger._store and len(ledger._store[tx_id]) > 1:
+        ledger._store[tx_id][1].prev_record_hash = "broken"
 
+    resp = await client.get(f"/v1/audit/{tx_id}/verify")
+    if resp.status_code == 200 and resp.json().get("valid") is False:
+        return ExecutionResult(DecisionOutcome.DETECTED, SideEffectOutcome.NONE, resp.status_code, evidence="Broken hash detected")
+    return ExecutionResult(DecisionOutcome.ALLOW, SideEffectOutcome.NONE, resp.status_code)
 
 register_attack(AttackDefinition(
     attack_id="T-39", name="Broken prev_record_hash", category="Audit",
@@ -719,12 +761,14 @@ async def execute_V02(client: httpx.AsyncClient) -> ExecutionResult:
     payload = generator.generate_valid_payload()
     resp = await client.post("/v1/authorize", json=payload)
     if resp.status_code != 200:
-        return ExecutionResult(DecisionOutcome.ERROR, SideEffectOutcome.UNKNOWN, resp.status_code, outcome=AttackOutcome.ERROR)
-    token = resp.json()["execution_token"]
+        return ExecutionResult(DecisionOutcome.ERROR, SideEffectOutcome.UNKNOWN, resp.status_code, error='Setup failed', outcome=AttackOutcome.ERROR)
+    token = resp.json().get("execution_token")
+    if not token:
+        return ExecutionResult(DecisionOutcome.ERROR, SideEffectOutcome.UNKNOWN, resp.status_code, error='Missing token', outcome=AttackOutcome.ERROR)
     exe_payload = {
-        "transaction_id": payload["transaction_id"], 
+        "transaction_id": payload["transaction_id"],
         "execution_token": token,
-        "amount": 1000.00, # Assuming this matches the generated amount if overridden, else it might fail. Let's force it.
+        "amount": "1000.00", # Assuming this matches the generated amount if overridden, else it might fail. Let's force it.
         "currency": "INR",
         "merchant_id": payload["cart"]["merchant_id"],
         "mandate_hash": jwt.decode(payload["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"],
@@ -736,9 +780,9 @@ async def execute_V02(client: httpx.AsyncClient) -> ExecutionResult:
     resp = await client.post("/v1/authorize", json=payload)
     token = resp.json()["execution_token"]
     exe_payload = {
-        "transaction_id": payload["transaction_id"], 
+        "transaction_id": payload["transaction_id"],
         "execution_token": token,
-        "amount": 1000.00,
+        "amount": "1000.00",
         "currency": "INR",
         "merchant_id": payload["cart"]["merchant_id"],
         "mandate_hash": jwt.decode(payload["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"],

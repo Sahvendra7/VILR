@@ -33,7 +33,7 @@ class UserIntent(BaseModel):
 class CartItem(BaseModel):
     item_id: Identifier
     name: str
-    quantity: Annotated[int, Field(ge=0)]
+    quantity: Annotated[int, Field(ge=1)]
     unit_price: Money
     currency: CurrencyCode
     category: str

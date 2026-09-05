@@ -1,43 +1,40 @@
 # VILR: Verifiable Intent & Liability Runtime
 
-**VILR is a runtime trust boundary for agentic payments: AI interprets intent, cryptography verifies integrity, OPA authorizes deterministically, Redis protects execution, and only the payment executor can move money.**
+## PROBLEM:
+AI agents introduce a new payment trust boundary. They can hallucinate, and merchants can inject malicious prompts, making autonomous AI payments extremely dangerous if the AI has the authority to move money.
 
-## 1. The Problem
-AI agents hallucinate, and merchants can inject malicious prompts, making autonomous AI payments extremely dangerous if the AI has the authority to move money.
+## SOLUTION:
+VILR separates probabilistic AI interpretation from deterministic payment authorization. It uses a zero-trust cryptographic gateway to authorize the actual financial execution.
 
-## 2. The Solution
-Separate intelligence from authorization: use AI to interpret intent, but use a deterministic, zero-trust cryptographic gateway to authorize the actual financial execution.
+## CORE PRINCIPLE:
+"AI can interpret and recommend. AI cannot authorize money movement."
 
-## 3. Architecture
+## ARCHITECTURE:
+Gemini → Crypto → OPA → Redis → PaymentExecutor → Razorpay → Supabase
 
-```mermaid
-graph TD
-    UI[User Intent] --> SV[Semantic Verifier]
-    SV -->|Gemini Assessment| OPA[OPA Policy Engine]
-    Cart[Merchant Cart] --> Crypto[JCS Cryptography]
-    Crypto --> OPA
-    OPA -->|ALLOW/DENY| Redis[Redis Idempotency]
-    Redis -->|Execution Token| Pay[Payment Executor]
-```
-
-## 4. Key Invariant
-**AI can interpret and recommend. AI cannot authorize money movement.**
-The Gemini LLM provides probabilistic semantic evidence; Open Policy Agent (OPA) evaluates that evidence deterministically.
-
-## 5. 90-Second Quickstart
+## 1. Quickstart
 ```bash
 # Clone and setup
 git clone https://github.com/sahvendraz/VILR.git
 cd VILR
 python3 -m venv venv && source venv/bin/activate
 pip install -e .
-
-# Run the live Gemini Productization Demo
-# (Requires GEMINI_API_KEY in .env)
-python scripts/cli.py demo --llm gemini
 ```
 
-## 6. Security Evidence
+## 2. Safe Demo
+```bash
+# Run the live, safe demo with real infrastructure (no production funds)
+python scripts/cli.py demo --llm gemini --provider mock --ledger supabase
+```
+
+## 3. Live Integrations
+- **Gemini 3.1 Flash-Lite**: Semantic Verification.
+- **Razorpay TEST**: Controlled test-mode execution.
+- **Supabase**: Persistent tamper-evident audit chain.
+- **Redis Lua**: Atomic idempotency locking.
+- **OPA**: Deterministic authorization.
+
+## 4. Security Evidence
 In our rigorous security benchmark testing (40 attack vectors covering cart tampering, replay attacks, concurrent double-spends, and semantic manipulation):
 - **0 unauthorized payments were executed.**
 - 16 attacks were deterministically blocked by Gateway layers (Crypto, Redis, OPA).
@@ -48,7 +45,7 @@ VILR integrates the official `google-genai` SDK using `gemini-3.6-flash`. It uti
 
 ## 8. Limitations & Scope
 - **Prototype Status**: VILR is a Razorpay Buildathon prototype.
-- **Mock Razorpay**: Currently executes against a simulated Razorpay payment executor.
+- **Mock Razorpay**: Currently executes against a simulated Razorpay TEST payment executor.
 - **AP2-Compatible**: The cryptography simulates the Advanced Payments 2.0 (AP2) specification concepts but is a lightweight representation, not a compliant implementation.
 - **Simulated Recovery**: The revenue recovery metrics shown in the demo are conceptually simulated to demonstrate potential ROI.
 

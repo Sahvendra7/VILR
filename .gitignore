@@ -12,3 +12,12 @@ vilr.egg-info/
 .env
 results/
 *.log
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+venv12/
+.pytest_cache/

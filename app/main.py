@@ -2,6 +2,7 @@ import httpx
 import redis.asyncio as redis
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from app.config.settings import settings
 from app.api.routes import router as v1_router
@@ -26,7 +27,7 @@ from app.domain.errors import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     redis_client = redis.from_url(settings.redis_url)
-    
+
     verifier = VILRMandateVerifier()
     idempotency = RedisIdempotencyStore(redis_client)
     semantic_provider = get_provider(settings.llm_provider, api_key=settings.gemini_api_key, model=settings.gemini_model)
@@ -34,8 +35,12 @@ async def lifespan(app: FastAPI):
     policy = OPAPolicyEngine(opa_url=settings.opa_url)
     provider = MockRazorpayProvider()
     executor = PaymentExecutor(provider)
-    audit = MemoryAuditLedger()
-    
+    if settings.supabase_url and settings.supabase_key:
+        from app.audit.supabase_ledger import SupabaseAuditLedger
+        audit = SupabaseAuditLedger()
+    else:
+        audit = MemoryAuditLedger()
+
     exception_intelligence = ExceptionIntelligenceLayer(semantic_provider)
 
     app.state.gateway = GatewayOrchestrator(
@@ -53,6 +58,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.include_router(v1_router)
+app.mount("/dashboard", StaticFiles(directory="static", html=True), name="static")
 
 # Exception Handlers
 @app.exception_handler(InvalidStateTransition)

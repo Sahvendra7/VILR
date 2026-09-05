@@ -24,7 +24,7 @@ class DeterministicRiskCalculator:
         for s in signals:
             if s not in unique_signals:
                 unique_signals.append(s)
-                
+
         factors = []
         score = 0
         for signal in unique_signals:
@@ -32,10 +32,10 @@ class DeterministicRiskCalculator:
                 weight = RISK_WEIGHTS[signal]
                 score += weight
                 factors.append(RiskFactor(signal=signal, weight=weight, description=f"Deterministic risk penalty for {signal}"))
-        
+
         # clamp to 200 max
         score = min(score, 200)
-        
+
         if score >= 100:
             level = "CRITICAL"
         elif score >= 70:
@@ -44,7 +44,7 @@ class DeterministicRiskCalculator:
             level = "MEDIUM"
         else:
             level = "LOW"
-            
+
         return RiskAssessment(
             score=score,
             level=level,

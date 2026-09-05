@@ -13,7 +13,7 @@ class LLMProviderError(VILRError):
 class MockLLMProvider(LLMProvider):
     def __init__(self, responses: Dict[str, Any] = None):
         self.responses = responses or {}
-        
+
     async def generate_json(self, system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> dict:
         for key, resp in self.responses.items():
             if key in user_prompt:
@@ -25,7 +25,7 @@ class MockLLMProvider(LLMProvider):
                     except json.JSONDecodeError:
                         raise LLMProviderError("LLM returned invalid JSON")
                 return resp
-                
+
         return {
             "status": "PASS",
             "confidence": 0.95,
@@ -39,33 +39,33 @@ class AnthropicLLMProvider(LLMProvider):
         self.api_key = api_key
         self.model = model
         self.url = "https://api.anthropic.com/v1/messages"
-        
+
     async def generate_json(self, system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> dict:
         headers = {
             "x-api-key": self.api_key,
             "anthropic-version": "2023-06-01",
             "content-type": "application/json"
         }
-        
+
         payload = {
             "model": self.model,
             "max_tokens": max_tokens,
             "system": system_prompt,
             "messages": [{"role": "user", "content": user_prompt}]
         }
-        
+
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.post(self.url, headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
                 content = data["content"][0]["text"]
-                
+
                 if "```json" in content:
                     content = content.split("```json")[1].split("```")[0].strip()
                 elif "```" in content:
                     content = content.split("```")[1].split("```")[0].strip()
-                    
+
                 return json.loads(content)
         except httpx.TimeoutException as e:
             logger.error("LLM_TIMEOUT", error=str(e))
@@ -90,7 +90,7 @@ class GeminiLLMProvider(LLMProvider):
         self.model = model
         # Initialize sync and async clients
         self.client = genai.Client(api_key=api_key)
-        
+
     async def generate_json(self, system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> dict:
         try:
             config = types.GenerateContentConfig(
@@ -121,7 +121,7 @@ class GeminiLLMProvider(LLMProvider):
                 temperature=0.0,
                 max_output_tokens=max_tokens
             )
-            
+
             # Using asyncio.wait_for to ensure a bounded timeout (e.g., 10 seconds)
             async def _call():
                 return await self.client.aio.models.generate_content(
@@ -129,21 +129,21 @@ class GeminiLLMProvider(LLMProvider):
                     contents=user_prompt,
                     config=config
                 )
-                
+
             start_time = asyncio.get_event_loop().time()
             response = await asyncio.wait_for(_call(), timeout=30.0)
             latency = asyncio.get_event_loop().time() - start_time
-            
+
             logger.info("GEMINI_API_CALL", model=self.model, latency=f"{latency:.3f}s", status="SUCCESS")
-            
+
             if not response.text:
                 raise LLMProviderError("Empty response from Gemini")
-                
+
             if response.parsed:
                 return response.parsed if isinstance(response.parsed, dict) else response.parsed.model_dump()
             else:
                 return json.loads(response.text)
-                
+
         except asyncio.TimeoutError as e:
             logger.error("LLM_TIMEOUT", error="Gemini API request timed out")
             raise LLMProviderError("LLM request timed out") from e

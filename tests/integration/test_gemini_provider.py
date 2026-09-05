@@ -28,9 +28,9 @@ async def test_live_gemini_semantic_pass(live_verifier):
         total_amount="2000.00",
         currency="USD"
     )
-    
+
     result = await live_verifier.verify(intent, cart)
-    
+
     assert result.status == "PASS"
     assert result.confidence > 0.8
     # category_match assert removed
@@ -44,9 +44,9 @@ async def test_live_gemini_semantic_fail(live_verifier):
         total_amount="500.00",
         currency="USD"
     )
-    
+
     result = await live_verifier.verify(intent, cart)
-    
+
     assert result.status == "FAIL"
     assert len(result.violations) > 0
     assert result.violations[0].severity in ["HIGH", "CRITICAL"]

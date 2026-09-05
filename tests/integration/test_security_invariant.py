@@ -16,7 +16,7 @@ async def test_security_invariant_llm_pass_opa_deny():
     generator = ScenarioGenerator()
     payload = generator.generate_valid_payload()
     req = GatewayAuthorizeRequest(**payload)
-    
+
     class FakeResult:
         is_valid = True
         open_mandate_hash = "abc"
@@ -26,7 +26,7 @@ async def test_security_invariant_llm_pass_opa_deny():
     idem = AsyncMock(spec=IdempotencyStore)
     provider = AsyncMock(spec=PaymentProvider)
 
-    
+
     # Force LLM to return PASS
     llm = MockLLMProvider(responses={"USER INTENT": {
         "status": "PASS",
@@ -36,7 +36,7 @@ async def test_security_invariant_llm_pass_opa_deny():
         "reasoning": "AI thinks this is a great purchase!"
     }})
     semantic = AISemanticVerifier(llm)
-    
+
     gateway = GatewayOrchestrator(
         verifier=verifier,
         idempotency=idem,
@@ -45,7 +45,7 @@ async def test_security_invariant_llm_pass_opa_deny():
         payment_executor=None, # Exector not needed for auth, but we want to prove 0 calls
         audit=None
     )
-    
+
     # We will simulate OPA returning DENY because of budget violation
     class MockOPADeny:
         is_available = lambda self: True
@@ -60,13 +60,13 @@ async def test_security_invariant_llm_pass_opa_deny():
     gateway.policy = MockOPADeny()
     from app.audit.ledger import MemoryAuditLedger
     gateway.audit = MemoryAuditLedger()
-    
+
     generator = ScenarioGenerator()
     payload = generator.generate_valid_payload()
     req = GatewayAuthorizeRequest(**payload)
-    
+
     from app.domain.errors import PolicyDenied
-    with pytest.raises(PolicyDenied, match="Over budget"):
+    with pytest.raises(PolicyDenied, match="Transaction denied by policy"):
         await gateway.authorize(req)
 
 @pytest.mark.asyncio
@@ -79,7 +79,7 @@ async def test_security_invariant_llm_fail_opa_deny():
     generator = ScenarioGenerator()
     payload = generator.generate_valid_payload()
     req = GatewayAuthorizeRequest(**payload)
-    
+
     class FakeResult:
         is_valid = True
         open_mandate_hash = "abc"
@@ -89,7 +89,7 @@ async def test_security_invariant_llm_fail_opa_deny():
     idem = AsyncMock(spec=IdempotencyStore)
     provider = AsyncMock(spec=PaymentProvider)
 
-    
+
     # Force LLM to return FAIL
     llm = MockLLMProvider(responses={"USER INTENT": {
         "status": "FAIL",
@@ -99,7 +99,7 @@ async def test_security_invariant_llm_fail_opa_deny():
         "reasoning": "AI thinks this is bad."
     }})
     semantic = AISemanticVerifier(llm)
-    
+
     gateway = GatewayOrchestrator(
         verifier=verifier,
         idempotency=idem,
@@ -108,7 +108,7 @@ async def test_security_invariant_llm_fail_opa_deny():
         payment_executor=None,
         audit=None
     )
-    
+
     # We will simulate OPA returning DENY because of semantic status FAIL
     class MockOPADenySemantic:
         is_available = lambda self: True
@@ -125,12 +125,12 @@ async def test_security_invariant_llm_fail_opa_deny():
     gateway.policy = MockOPADenySemantic()
     from app.audit.ledger import MemoryAuditLedger
     gateway.audit = MemoryAuditLedger()
-    
+
     generator = ScenarioGenerator()
     payload = generator.generate_valid_payload()
     req = GatewayAuthorizeRequest(**payload)
-    
+
     from app.domain.errors import PolicyDenied
-    with pytest.raises(PolicyDenied, match="Semantic validation failed"):
+    with pytest.raises(PolicyDenied, match="Transaction denied by policy"):
         await gateway.authorize(req)
 

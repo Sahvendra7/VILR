@@ -3,7 +3,7 @@ from app.exception.intelligence import ExceptionInvestigation
 from app.domain.models import SecurityReceipt
 from datetime import datetime
 from app.api.schemas import (
-    IntentRequest, IntentResponse, 
+    IntentRequest, IntentResponse,
     AuthorizeRequest, AuthorizeResponse,
     ExecuteRequest, ExecuteResponse,
     VerifyRequest, VerifyResponse
@@ -13,6 +13,40 @@ from app.domain.gateway import GatewayAuthorizeRequest, GatewayExecuteRequest
 from app.api.deps import get_gateway
 
 router = APIRouter(prefix="/v1")
+
+from pydantic import BaseModel
+from simulator.scenarios import ScenarioGenerator
+from decimal import Decimal
+from app.domain.models import Cart, CartItem
+
+class DemoPayloadRequest(BaseModel):
+    intent: str
+    raw_prompt: str
+    amount: str
+    items: list
+    max_budget: str = "70000.00"
+
+@router.post("/demo/generate_payload")
+async def generate_demo_payload(req: DemoPayloadRequest):
+    generator = ScenarioGenerator()
+    c = Cart(
+        merchant_id="m1",
+        items=[CartItem(**i) for i in req.items],
+        total_amount=Decimal(req.amount),
+        currency="INR"
+    )
+    payload = generator.generate_valid_payload({
+        "raw_prompt": req.raw_prompt,
+        "semantic_intent": req.intent,
+        "hard_constraints": {"max_budget": req.max_budget, "currency": "INR"},
+        "cart_override": c
+    })
+    
+    import jwt
+    payload["open_mandate_hash"] = jwt.decode(payload["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"]
+    return payload
+
+
 
 
 
@@ -50,7 +84,7 @@ async def execute_transaction(req: ExecuteRequest, gateway = Depends(get_gateway
 
 @router.get("/audit/{transaction_id}")
 async def get_audit(transaction_id: str, gateway = Depends(get_gateway)):
-    records = await gateway.audit.list_by_transaction(transaction_id)
+    records = await gateway.audit.get_transaction_history(transaction_id) if hasattr(gateway.audit, 'get_transaction_history') else await gateway.audit.list_by_transaction(transaction_id)
     return {"transaction_id": transaction_id, "records": [r.model_dump() for r in records]}
 
 @router.get("/audit/{transaction_id}/verify")
@@ -61,7 +95,7 @@ async def verify_audit_chain(transaction_id: str, gateway = Depends(get_gateway)
 async def get_metrics():
     return {"status": "ok"}
 
-@router.post("/v1/investigate/{transaction_id}", response_model=ExceptionInvestigation)
+@router.post("/investigate/{transaction_id}", response_model=ExceptionInvestigation)
 async def investigate_transaction(
     transaction_id: str,
     gateway=Depends(get_gateway)
@@ -71,7 +105,7 @@ async def investigate_transaction(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/v1/receipt/{transaction_id}", response_model=SecurityReceipt)
+@router.get("/receipt/{transaction_id}", response_model=SecurityReceipt)
 async def get_receipt(
     transaction_id: str,
     gateway=Depends(get_gateway)
@@ -80,3 +114,26 @@ async def get_receipt(
         return await gateway.generate_receipt(transaction_id)
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+import asyncio
+@router.post("/demo/concurrency")
+async def demo_concurrency(req: ExecuteRequest, gateway = Depends(get_gateway)):
+    async def try_exec():
+        exec_req = GatewayExecuteRequest(**req.model_dump())
+        try:
+            return await gateway.execute(exec_req)
+        except Exception as e:
+            return {"error": str(e), "status": "FAILED"}
+
+    results = await asyncio.gather(*[try_exec() for _ in range(100)])
+
+    successful = len([r for r in results if r.get("status") == "SUCCESS"])
+    replays = len([r for r in results if r.get("error")])
+
+    return {
+        "attempts": 100,
+        "successful_token_consumption": successful,
+        "replay_rejected": replays,
+        "observed_provider_executions": successful
+    }

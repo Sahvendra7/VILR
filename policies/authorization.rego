@@ -36,7 +36,7 @@ violations contains {"code": "MANDATE_EXPIRED", "message": "Mandate is expired"}
 # Budget
 violations contains {"code": "BUDGET_EXCEEDED", "message": "Cart total exceeds max amount"} if {
     valid_input
-    input.cart.total_amount > input.mandate.max_amount
+    to_number(input.cart.total_amount) > to_number(input.mandate.max_budget)
 }
 
 # Currency

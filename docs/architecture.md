@@ -77,7 +77,7 @@ Redis-backed layer providing two-phase reservation to prevent replay and duplica
 - **Composite key**: `vilr:idempotency:{open_mandate_hash}:{checkout_hash}` — scoped per checkout under a given mandate. A single open mandate can authorize multiple distinct checkouts, but each checkout executes at most once.
 - **Phase 1 — Reservation**: Tentative lock acquired via `SETNX` with TTL before semantic/policy validation. Released if validation fails.
 - **Phase 2 — Commitment**: Reservation committed (permanent) after authorization succeeds. Prevents execution replay.
-- Redis provides at-most-once *gateway-side* lock acquisition for authorization. It does **not** guarantee exactly-once external payment execution — that requires the payment provider's own idempotency key.
+- Redis provides at-most-once *gateway-side* lock acquisition for authorization. It does **not** guarantee at-most-once gateway execution external payment execution — that requires the payment provider's own idempotency key.
 
 ### Semantic Verification Layer
 Implements the LLM-as-judge pattern to verify alignment between abstract `UserIntent` and concrete cart/mandate items.
@@ -105,7 +105,7 @@ An abstraction over payment execution, with strict separation from authorization
 An append-only, hash-chained store recording the complete evidence chain for every transaction attempt.
 - SQLite-backed for simplicity and portability in the hackathon context.
 - Each audit record includes `prev_record_hash`: the SHA-256 hash of the previous record's canonical (JCS) form. This forms a hash chain — tampering with any record breaks the chain integrity, which is detectable by verification.
-- SQLite is **not** immutable. The hash chain provides application-level tamper evidence. Production deployment would use append-only cloud logging (e.g., WORM storage).
+- SQLite is **not** immutable. The hash chain provides application-level tamper evidence. Production deployment would use append-only cloud logging (e.g., persistent tamper-evident audit chain storage).
 
 ### State Machine
 A strictly enforced state machine guiding transactions through four distinct phases:
@@ -231,7 +231,7 @@ VILR acts as an enforcement bridge for the AP2 standard, adapting it for robust 
 - Hash-chained, append-only audit ledger.
 - Extensible Mock payment adapter architecture with provider-side idempotency key.
 
-**What VILR simulates (not production-ready):**
+**What VILR simulates (not hackathon-ready prototype):**
 - **SD-JWT selective disclosure**: Uses standard JWT with ES256 signatures for simplicity.
 - **DID-based identity**: Relies on simplified key identifiers rather than full W3C DIDs.
 - **UPI Reserve Pay integration**: Uses a mock payment provider interface.
@@ -288,7 +288,7 @@ VILR/
 │   ├── llm/
 │   │   └── provider.py       # LLM provider abstraction
 │   ├── razorpay/
-│   │   └── provider.py       # Mock Razorpay payment provider
+│   │   └── provider.py       # Mock Razorpay TEST payment provider
 │   └── merchant/
 │       └── __init__.py       # Merchant adapter stubs
 ├── policies/

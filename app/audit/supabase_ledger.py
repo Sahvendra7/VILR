@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from typing import Optional, List
@@ -36,48 +37,49 @@ class SupabaseAuditLedger(AuditLedger):
                 "record": record.model_dump(mode='json')
             }
             # supabase-python uses synchronous calls under the hood here
-            self.client.table("audit_ledger").insert(data).execute()
+            await asyncio.to_thread(self.client.table("audit_ledger").insert(data).execute)
         except Exception as e:
             logger.error(f"SUPABASE_LEDGER_ERROR transaction_id={record.transaction_id} error={str(e)}")
 
     async def get(self, transaction_id: str) -> Optional[AuditRecord]:
         try:
             # Get latest record for transaction
-            response = self.client.table("audit_ledger").select("*").eq("transaction_id", transaction_id).order("id", desc=True).limit(1).execute()
+            response = await asyncio.to_thread(self.client.table("audit_ledger").select("*").eq("transaction_id", transaction_id).order("id", desc=True).limit(1).execute)
             if not response.data:
                 return None
-            
+
             return AuditRecord(**response.data[0]["record"])
         except Exception as e:
             logger.error(f"SUPABASE_GET_ERROR transaction_id={transaction_id} error={str(e)}")
             return None
-            
+
     async def get_transaction_history(self, transaction_id: str) -> List[AuditRecord]:
         try:
-            response = self.client.table("audit_ledger").select("*").eq("transaction_id", transaction_id).order("id").execute()
+            response = await asyncio.to_thread(self.client.table("audit_ledger").select("*").eq("transaction_id", transaction_id).order("id").execute)
             return [AuditRecord(**row["record"]) for row in response.data]
         except Exception as e:
             logger.error(f"SUPABASE_HISTORY_ERROR transaction_id={transaction_id} error={str(e)}")
             return []
-            
-    def verify_chain(self, records: List[AuditRecord]) -> tuple[bool, str]:
+
+    async def verify_chain(self, transaction_id: str) -> dict:
+        records = await self.get_transaction_history(transaction_id)
         if not records:
-            return False, "NO_RECORDS"
+            return {"valid": False, "broken_at": 0, "reason": "NO_RECORDS"}
 
         expected_prev = GENESIS_HASH
         for i, rec in enumerate(records):
             if rec.prev_record_hash != expected_prev:
-                return False, f"PREV_HASH_MISMATCH at pos {i}"
-            
+                return {"valid": False, "broken_at": i, "reason": "PREV_HASH_MISMATCH"}
+
             canonical = self._canonicalize(rec.model_dump(mode='json'))
             computed_hash = self._hash(canonical)
             if computed_hash != rec.record_hash:
-                return False, f"RECORD_HASH_MISMATCH at pos {i}"
-            
+                return {"valid": False, "broken_at": i, "reason": "RECORD_HASH_MISMATCH"}
+
             expected_prev = computed_hash
 
-        return True, "Valid"
-        
+        return {"valid": True}
+
     def build_record(self, base_data: dict) -> AuditRecord:
         base_data["record_hash"] = "temp"
         rec = AuditRecord(**base_data)

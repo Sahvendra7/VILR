@@ -1,7 +1,7 @@
 import jwt
 from typing import Dict, Any
 from app.domain.models import (
-    OpenCheckoutMandate, OpenPaymentMandate, 
+    OpenCheckoutMandate, OpenPaymentMandate,
     ClosedCheckoutMandate, ClosedPaymentMandate
 )
 from app.domain.errors import InvalidSignature, MandateExpired, HashMismatch, InvalidRequest
@@ -49,7 +49,7 @@ class VILRMandateVerifier(MandateVerifier):
 
     async def verify_open_checkout_mandate(self, token: str, user_public_key: dict) -> OpenCheckoutMandate:
         payload = self._verify_jwt(token, user_public_key)
-        
+
         # Validate typed fields
         try:
             return OpenCheckoutMandate(
@@ -64,7 +64,7 @@ class VILRMandateVerifier(MandateVerifier):
 
     async def verify_closed_checkout_mandate(self, token: str, merchant_public_key: dict) -> ClosedCheckoutMandate:
         payload = self._verify_jwt(token, merchant_public_key)
-        
+
         try:
             return ClosedCheckoutMandate(
                 mandate_id=payload["mandate_id"],
@@ -75,5 +75,5 @@ class VILRMandateVerifier(MandateVerifier):
             )
         except Exception as e:
             raise InvalidRequest(f"Malformed closed checkout mandate: {e}")
-            
+
     # Open/Closed payment verifications can be added here mirroring the above.

@@ -23,11 +23,11 @@ def public_key_to_jwk(public_key: ec.EllipticCurvePublicKey) -> dict:
     """Converts a P-256 public key to JWK representation."""
     if not isinstance(public_key.curve, ec.SECP256R1):
         raise ValueError("Only P-256 curve is supported")
-        
+
     public_numbers = public_key.public_numbers()
     x = public_numbers.x.to_bytes(32, byteorder='big')
     y = public_numbers.y.to_bytes(32, byteorder='big')
-    
+
     return {
         "kty": "EC",
         "crv": "P-256",
@@ -39,10 +39,10 @@ def jwk_to_public_key(jwk_dict: dict) -> ec.EllipticCurvePublicKey:
     """Converts a JWK representation to a P-256 public key."""
     if jwk_dict.get("kty") != "EC" or jwk_dict.get("crv") != "P-256":
         raise ValueError(f"Only P-256 EC keys supported: {jwk_dict}")
-        
+
     x = int.from_bytes(b64url_decode(jwk_dict["x"]), byteorder='big')
     y = int.from_bytes(b64url_decode(jwk_dict["y"]), byteorder='big')
-    
+
     return ec.EllipticCurvePublicNumbers(x, y, ec.SECP256R1()).public_key()
 
 def compute_jcs_hash(payload: dict) -> str:

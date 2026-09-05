@@ -76,7 +76,7 @@ class EvaluationResult:
     status: str # PASS or FAIL
     error_type: str = ""
     explanation: str = ""
-    
+
     # Legacy fields to support Reporter without breaking everything
     outcome: AttackOutcome = AttackOutcome.ERROR
     expected: AttackOutcome = AttackOutcome.ERROR
@@ -91,11 +91,11 @@ class EvaluationResult:
     duration_ms: float = 0.0
     error: str = ""
     details: str = ""
-    
+
     @property
     def passed(self) -> bool:
         return self.status == "PASS"
-    
+
     @property
     def attack_id(self): return self.case_id
 

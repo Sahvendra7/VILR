@@ -4,7 +4,7 @@
 **Found:** `docs/final-security-scorecard.md` contained outdated benchmark numbers (40 tests, 22 NOT_BLOCKED).
 **Correction:** Adjusted to match the verified 186 total tests (180 BLOCKED, 6 DETECTED, 0 NOT_BLOCKED).
 **Found:** Scorecard stated "Redis Lua atomic execution token prevents double spend."
-**Correction:** Adjusted to "Redis Lua atomic execution token prevents duplicate gateway authorization. Exactly-once external payments rely on provider-side idempotency keys."
+**Correction:** Adjusted to "Redis Lua atomic execution token prevents duplicate gateway authorization. at-most-once gateway execution-token consumption external payments rely on provider-side idempotency keys."
 
 ## 2. Legal / Liability Claims
 **Found:** `README.md` mentions "liability is undefined". 
@@ -20,7 +20,7 @@
 ## 5. OPA and Prompt Injection
 **Found:** Ensured no documentation implies OPA natively detects prompt injections. OPA only evaluates the probabilistic `SemanticAssessment` evidence alongside deterministic budget constraints.
 
-## 6. Redis and Exactly-Once Payments
+## 6. Redis and at-most-once gateway execution-token consumption Payments
 **Found:** Documentation accurately distinguishes between Gateway-level execution tokens (Redis) and Provider-level idempotency (Razorpay/Mock provider).
 
 ## 7. AP2 Compliance

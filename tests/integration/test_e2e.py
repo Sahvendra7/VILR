@@ -10,12 +10,12 @@ generator = ScenarioGenerator()
 async def test_canonical_happy_path():
     async with app.router.lifespan_context(app), AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as test_client:
         payload = generator.generate_valid_payload()
-        
+
         # 1. Authorize
         resp_intent = await test_client.post("/v1/authorize", json=payload)
         assert resp_intent.status_code == 200, resp_intent.text
         token = resp_intent.json()["execution_token"]
-        
+
         # 2. Execute
         exec_payload = {
             "transaction_id": payload["transaction_id"],

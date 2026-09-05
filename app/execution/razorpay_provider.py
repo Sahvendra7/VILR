@@ -20,12 +20,12 @@ class RazorpayPaymentProvider(PaymentProvider):
 
     async def execute_payment(self, request: ExecutionRequest) -> ExecutionReceipt:
         self.payment_call_count += 1
-        
+
         loop = asyncio.get_event_loop()
-        
+
         try:
             amount_in_paise = int(float(request.amount) * 100)
-            
+
             def create_order():
                 data = {
                     "amount": amount_in_paise,
@@ -38,26 +38,26 @@ class RazorpayPaymentProvider(PaymentProvider):
                     }
                 }
                 return self.client.order.create(data=data)
-            
+
             if self.injected_timeout_after_acceptance:
                 logger.error("SIMULATED TIMEOUT: Razorpay provider timeout injected.")
                 raise httpx.ReadTimeout("Simulated read timeout")
-                
+
             t0 = time.time()
             order = await loop.run_in_executor(None, create_order)
             latency = (time.time() - t0) * 1000
-            
+
             provider_id = order.get("id")
-            
+
             logger.info(f"RAZORPAY_ORDER_CREATED id={provider_id} latency={latency:.0f}ms")
-            
+
             return ExecutionReceipt(
                 transaction_id=request.transaction_id,
                 provider_transaction_id=provider_id,
                 status="SUCCESS",
                 timestamp=datetime.now(timezone.utc)
             )
-            
+
         except httpx.TimeoutException:
             return ExecutionReceipt(
                 transaction_id=request.transaction_id,

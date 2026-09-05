@@ -5,7 +5,7 @@
 - **Replay Prevention Rate**: Gateway-level replay prevention (Redis idempotency)
 - **Cart Tamper Detection Rate**: Cryptographic hash validation
 - **Unauthorized Payment Execution Rate**: 0.0% (Execution layer blocks unauthorized requests)
-- **Duplicate Execution Rate**: 0.0% (Redis Lua atomic execution token prevents duplicate gateway authorization. Provider-side exactly-once external payment semantics rely on provider-side idempotency keys.)
+- **Duplicate Execution Rate**: 0.0% (Redis Lua atomic execution token prevents duplicate gateway authorization. Provider-side at-most-once gateway execution-token consumption external payment semantics rely on provider-side idempotency keys.)
 - **Audit Tamper Detection Rate**: Hash chaining detects tampering
 
 ## 2. Probabilistic Properties
@@ -13,10 +13,10 @@
   VILR mitigates adversarial prompt injections targeting merchant metadata. The AI provides a probabilistic semantic assessment. Final deterministic authorization (like budget limits) relies strictly on OPA fallback.
 
 ## 3. Observed Attack Results
-From the 40 adversarial benchmark scenarios in Phase 8:
-- **BLOCKED**: 16
+From the 42 adversarial benchmark scenarios:
+- **BLOCKED**: 23
 - **DETECTED**: 1
-- **NOT_BLOCKED**: 23 (Probabilistic LLM attacks and concurrency edge cases, subsequently remediated in Phase 8.5)
+- **NOT_BLOCKED**: 16
 - **ERROR**: 0
 - **INCONCLUSIVE**: 0
 

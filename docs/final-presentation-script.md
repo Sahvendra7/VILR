@@ -78,9 +78,9 @@ Result? 180 attacks Blocked, 6 Detected safely. 0 unauthorized payments executed
 - **1-Sentence:** Cryptography guarantees the cart hasn't been tampered with since checkout, but it doesn't guarantee the AI picked the right items.
 - **Deep:** JCS and ECDSA P-256 prove that the merchant didn't manipulate prices *after* the agent created the cart. They do not execute the payment or validate semantic intent.
 
-**Q6: Does VILR guarantee exactly-once payment execution?**
-- **1-Sentence:** VILR guarantees at-most-once *gateway authorization*, relying on the payment provider's idempotency keys for exactly-once execution.
-- **Deep:** Our Redis execution token prevents duplicate gateway processing. However, exactly-once external payment requires Razorpay's native provider-side idempotency handling.
+**Q6: Does VILR guarantee gateway-level replay protection execution?**
+- **1-Sentence:** VILR guarantees at-most-once *gateway authorization*, relying on the payment provider's idempotency keys for at-most-once gateway execution-token consumption execution.
+- **Deep:** Our Redis execution token prevents duplicate gateway processing. However, at-most-once gateway execution-token consumption external payment requires Razorpay's native provider-side idempotency handling.
 
 **Q7: What happens if Razorpay times out during a payment call?**
 - **1-Sentence:** The system transitions to a `PAYMENT_UNKNOWN` state without retrying.
@@ -94,6 +94,6 @@ Result? 180 attacks Blocked, 6 Detected safely. 0 unauthorized payments executed
 - **1-Sentence:** Deterministic ontologies fail at scale because merchants don't standardize their descriptions.
 - **Deep:** Hardcoding "Laptop" fails if the merchant lists "Dell XPS 13 9310". We need probabilistic AI to bridge unstructured merchant data with user intent, but we sandbox that AI behind deterministic rules.
 
-**Q10: What limits VILR from being production-ready today?**
+**Q10: What limits VILR from being hackathon-ready prototype today?**
 - **1-Sentence:** It requires transitioning to a production HSM for keys and a distributed ledger for the audit chain.
 - **Deep:** We used a local signer and SQLite for hackathon velocity. Production requires AWS KMS/HashiCorp Vault for key management and a highly available distributed database (like Amazon QLDB) for the tamper-evident ledger.

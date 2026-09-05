@@ -42,7 +42,7 @@ SCHEMA:
 class AISemanticVerifier(SemanticVerifier):
     def __init__(self, provider: LLMProvider):
         self.provider = provider
-        
+
     def _truncate_text(self, text: str, max_length: int = 2000) -> str:
         if not text: return ""
         return text[:max_length] if len(text) > max_length else text
@@ -51,10 +51,10 @@ class AISemanticVerifier(SemanticVerifier):
         # 1. Enforce safety limits before parsing
         if intent.raw_prompt and len(intent.raw_prompt) > 1000:
             return self._safe_fail("Intent exceeds maximum length.")
-            
+
         if len(cart.items) > 50:
             return self._safe_fail("Cart exceeds maximum item count.")
-            
+
         # 2. Serialize and sanitize
         safe_cart_items = []
         for item in cart.items:
@@ -64,7 +64,7 @@ class AISemanticVerifier(SemanticVerifier):
                 "brand": item.brand or "",
                 "unit_price": float(item.unit_price)
             })
-            
+
         user_prompt = f"""
 USER INTENT:
 {intent.raw_prompt or "No raw text provided."}
@@ -79,7 +79,7 @@ Items:
 
 TASK: Assess semantic compatibility between the user intent and the merchant cart data. Output ONLY JSON.
 """
-        
+
         try:
             # 3. Request assessment
             result_json = await self.provider.generate_json(
@@ -87,10 +87,10 @@ TASK: Assess semantic compatibility between the user intent and the merchant car
                 user_prompt=user_prompt,
                 max_tokens=1500
             )
-            
+
             # 4. Validate output schema
             return SemanticAssessment(**result_json)
-            
+
         except (LLMProviderError, ValidationError) as e:
             logger.warning("SEMANTIC_VERIFICATION_ERROR", error=str(e))
             return self._safe_fail(f"Semantic evaluation failed: {str(e)}")

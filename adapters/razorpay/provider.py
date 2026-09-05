@@ -38,7 +38,7 @@ class MockRazorpayProvider(PaymentProvider):
         self.payment_call_count += 1
         if self.simulate_network_delay > 0:
             await asyncio.sleep(self.simulate_network_delay)
-            
+
         if self.injected_network_failure:
             raise PaymentProviderError("Connection refused by provider")
 
@@ -50,7 +50,7 @@ class MockRazorpayProvider(PaymentProvider):
                 existing = self._store[key]
                 if existing["fingerprint"] != fingerprint:
                     raise IdempotencyConflict("Conflicting reuse of idempotency key with different parameters")
-                
+
                 # Replay idempotent response
                 # Note: If it was UNKNOWN originally (timeout_after_acceptance), it actually succeeded/failed on the provider side.
                 return ExecutionReceipt(
@@ -65,13 +65,13 @@ class MockRazorpayProvider(PaymentProvider):
             self.payment_creation_count += 1
             payment_id = f"pay_{uuid.uuid4().hex[:12]}"
             now = datetime.now(UTC)
-            
+
             outcome = self.injected_outcome or "SUCCESS"
             error_message = None
-            
+
             if outcome == "FAILED":
                 error_message = "INSUFFICIENT_FUNDS"
-            
+
             record = {
                 "fingerprint": fingerprint,
                 "transaction_id": request.transaction_id,
@@ -81,7 +81,7 @@ class MockRazorpayProvider(PaymentProvider):
                 "error_message": error_message,
                 "was_timeout": self.injected_timeout_after_acceptance
             }
-            
+
             self._store[key] = record
 
             if self.injected_timeout_after_acceptance:

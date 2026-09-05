@@ -37,11 +37,11 @@ def test_cart_item_validation():
     # Negative quantity
     with pytest.raises(ValidationError):
         CartItem(item_id="I1", name="Shoe", quantity=-1, unit_price=Decimal("10"), currency="USD", category="apparel")
-    
+
     # Negative price
     with pytest.raises(ValidationError):
         CartItem(item_id="I1", name="Shoe", quantity=1, unit_price=Decimal("-10"), currency="USD", category="apparel")
-    
+
     # Valid
     c = CartItem(item_id="I1", name="Shoe", quantity=2, unit_price=Decimal("10"), currency="USD", category="apparel")
     assert c.quantity == 2
@@ -59,7 +59,7 @@ def test_semantic_assessment_confidence_bounds():
         status="PASS", confidence=0.99, checks={}, violations=[], reasoning="test"
     )
     assert sa.confidence == 0.99
-    
+
     with pytest.raises(ValidationError):
         SemanticAssessment(
             status="INVALID", confidence=0.9, checks={}, violations=[], reasoning="test"
@@ -121,3 +121,24 @@ def test_cart_valid():
         merchant_id="m1"
     )
     assert c.total_amount == Decimal("1.50")
+
+def test_cart_item_quantity_validation():
+    from pydantic import ValidationError
+    from decimal import Decimal
+    # Valid
+    c1 = CartItem(item_id="1", quantity=1, unit_price=Decimal("10.00"), currency="USD", name="A", category="B")
+    assert c1.quantity == 1
+
+    # Zero
+    try:
+        CartItem(item_id="1", quantity=0, unit_price=Decimal("10.00"), currency="USD", name="A", category="B")
+        assert False, "Should reject quantity 0"
+    except ValidationError:
+        pass
+
+    # Negative
+    try:
+        CartItem(item_id="1", quantity=-1, unit_price=Decimal("10.00"), currency="USD", name="A", category="B")
+        assert False, "Should reject quantity -1"
+    except ValidationError:
+        pass

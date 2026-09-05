@@ -15,7 +15,7 @@ class BaselineCGateway(GatewayOrchestrator):
             raise e
         # Bypass Semantic and Policy
         return {"status": "AUTHORIZED", "execution_token": "token_c", "transaction_id": request.transaction_id}
-        
+
     async def execute(self, request: GatewayExecuteRequest) -> dict:
         return {"status": "CONFIRMED", "transaction_id": request.transaction_id}
 
@@ -33,7 +33,7 @@ class BaselineBGateway(GatewayOrchestrator):
         except Exception as e:
             raise e
         return {"status": "AUTHORIZED", "execution_token": "token_b", "transaction_id": request.transaction_id}
-        
+
     async def execute(self, request: GatewayExecuteRequest) -> dict:
         return {"status": "CONFIRMED", "transaction_id": request.transaction_id}
 
@@ -44,7 +44,7 @@ class BaselineAGateway(GatewayOrchestrator):
     """
     async def authorize(self, request: GatewayAuthorizeRequest) -> dict:
         return {"status": "AUTHORIZED", "execution_token": "token_a", "transaction_id": request.transaction_id}
-        
+
     async def execute(self, request: GatewayExecuteRequest) -> dict:
         return {"status": "CONFIRMED", "transaction_id": request.transaction_id}
 

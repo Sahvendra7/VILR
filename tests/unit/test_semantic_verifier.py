@@ -116,7 +116,7 @@ def base_intent(text=""):
 def base_cart(name="Product", desc="Desc"):
     return Cart(
         merchant_id="m1",
-        
+
         total_amount=Decimal("40000"),
         currency="INR",
         items=[CartItem(item_id="1", name=name,  unit_price=Decimal("40000"), quantity=1, currency="INR", category="laptop")]

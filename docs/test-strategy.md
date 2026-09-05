@@ -152,7 +152,7 @@ System efficacy and security posture are measured against these strict targets:
 | Metric | Target | Measurement Method |
 |---|---|---|
 | **Hard Policy Violation Rate** | 0% | Automated test suite execution |
-| **Semantic Attack Detection Rate** | Measured per run (report actual) | Adversarial test suite |
+| **Semantic probabilistic detection rate** | Measured per run (report actual) | Adversarial test suite |
 | **False Rejection Rate** | < 1% | E2E test suite with valid payloads |
 | **Replay Prevention Rate** | PASS | Concurrency & Idempotency tests |
 | **Cart Tamper Detection Rate** | PASS | Cryptographic test suite |

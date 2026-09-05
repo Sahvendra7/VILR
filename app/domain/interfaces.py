@@ -9,20 +9,20 @@ from app.domain.models import (
 class MandateVerifier(Protocol):
     async def verify_open_checkout_mandate(self, token: str, user_public_key: dict) -> OpenCheckoutMandate:
         ...
-    
+
     async def verify_closed_checkout_mandate(self, token: str, merchant_public_key: dict) -> ClosedCheckoutMandate:
         ...
 
 class IdempotencyStore(Protocol):
     async def try_reserve(self, key: str, transaction_id: str, ttl_seconds: int) -> bool:
         ...
-        
+
     async def commit(self, key: str) -> None:
         ...
-        
+
     async def release(self, key: str, transaction_id: str) -> None:
         ...
-        
+
     async def is_reserved_or_committed(self, key: str) -> Tuple[bool, Optional[str]]:
         ...
 
@@ -51,12 +51,12 @@ class PaymentProvider(Protocol):
 class AuditLedger(Protocol):
     async def record(self, record: AuditRecord) -> None:
         ...
-        
+
     async def get(self, transaction_id: str) -> Optional[AuditRecord]:
         ...
-        
+
     async def list_by_user(self, user_id: str) -> List[AuditRecord]:
         ...
-        
+
     async def verify_chain(self, transaction_id: str) -> dict:
         ...

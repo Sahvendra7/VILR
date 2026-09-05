@@ -76,13 +76,13 @@ def mock_audit():
 @pytest.fixture
 def gateway(mock_verifier, mock_idempotency, mock_semantic, mock_policy, mock_executor, mock_audit, monkeypatch):
     monkeypatch.setattr('app.domain.gateway.compute_checkout_hash', lambda x: 'ch_123')
-    
+
     # Store tokens in a local dict for the mock to use
     fake_tokens = {}
-    async def create_token(token, tx_id, auth_data, ttl):
+    async def create_token(token, tx_id, auth_data, ttl=3600):
         fake_tokens[token] = {"transaction_id": tx_id, "auth_data": auth_data, "status": "available"}
-        
-    async def consume_token(token, tx_id, expected_amount, expected_currency, expected_merchant, expected_hash):
+
+    async def consume_token(token, tx_id, expected_amount, expected_currency, expected_merchant, expected_hash, ttl=3600):
         if token not in fake_tokens: raise ValueError("Invalid or expired execution token")
         if fake_tokens[token]["transaction_id"] != tx_id:
             from app.domain.errors import InvalidRequest
@@ -92,7 +92,7 @@ def gateway(mock_verifier, mock_idempotency, mock_semantic, mock_policy, mock_ex
             raise DuplicateExecution("Execution token already consumed")
         fake_tokens[token]["status"] = "consumed"
         return fake_tokens[token]["auth_data"]
-        
+
     mock_idempotency.create_execution_token.side_effect = create_token
     mock_idempotency.consume_execution_token.side_effect = consume_token
     return GatewayOrchestrator(
@@ -175,11 +175,11 @@ async def test_g_07_semantic_failure_releases_reservation(gateway, mock_semantic
     res.status = "FAIL"
     res.confidence = 0.1
     mock_semantic.verify.return_value = res
-    
+
     dec = __import__('unittest').mock.MagicMock()
     dec.allowed = False
     mock_policy.evaluate.return_value = dec
-    
+
     req = create_auth_request()
     from app.domain.gateway import PolicyDenied
     with __import__('pytest').raises(PolicyDenied):
@@ -191,7 +191,7 @@ async def test_g_08_policy_denial_releases_reservation(gateway, mock_policy, moc
     dec = MagicMock()
     dec.allowed = False
     mock_policy.evaluate.return_value = dec
-    
+
     req = create_auth_request()
     with pytest.raises(PolicyDenied):
         await gateway.authorize(req)
@@ -202,11 +202,11 @@ async def test_g_09_llm_pass_cannot_bypass_opa(gateway, mock_semantic, mock_poli
     sem_res = MagicMock()
     sem_res.status = "PASS" # LLM says pass
     mock_semantic.verify.return_value = sem_res
-    
+
     dec = MagicMock()
     dec.allowed = False # OPA says no
     mock_policy.evaluate.return_value = dec
-    
+
     req = create_auth_request()
     with pytest.raises(PolicyDenied):
         await gateway.authorize(req)
@@ -216,7 +216,7 @@ async def test_g_10_opa_denial_blocks_execution(gateway, mock_policy):
     dec = MagicMock()
     dec.allowed = False
     mock_policy.evaluate.return_value = dec
-    
+
     req = create_auth_request()
     with pytest.raises(PolicyDenied):
         await gateway.authorize(req)
@@ -248,14 +248,14 @@ async def test_g_12_execution_token_invalid_before_authorization(gateway):
 async def test_g_13_execution_token_single_use(gateway):
     req = create_auth_request()
     res = await gateway.authorize(req)
-    
+
     exec_req = GatewayExecuteRequest(
         transaction_id="tx_123", execution_token=res["execution_token"], amount=50.0,
         currency="USD", merchant_id="m1", mandate_hash="omh_123",
         provider_idempotency_key="pid", payment_method_id="pm1"
     )
     await gateway.execute(exec_req)
-    
+
     # Second time should fail
     from app.domain.errors import DuplicateExecution
     with pytest.raises(DuplicateExecution):
@@ -265,7 +265,7 @@ async def test_g_13_execution_token_single_use(gateway):
 async def test_g_14_payment_success(gateway):
     req = create_auth_request()
     res = await gateway.authorize(req)
-    
+
     exec_req = GatewayExecuteRequest(
         transaction_id="tx_123", execution_token=res["execution_token"], amount=50.0,
         currency="USD", merchant_id="m1", mandate_hash="omh_123",
@@ -278,12 +278,12 @@ async def test_g_14_payment_success(gateway):
 async def test_g_15_payment_failure(gateway, mock_executor):
     req = create_auth_request()
     res = await gateway.authorize(req)
-    
+
     fail_rec = ExecutionReceipt(
         transaction_id="tx_123", status="FAILED", timestamp=datetime.now(UTC)
     )
     mock_executor.execute.return_value = fail_rec
-    
+
     exec_req = GatewayExecuteRequest(
         transaction_id="tx_123", execution_token=res["execution_token"], amount=50.0,
         currency="USD", merchant_id="m1", mandate_hash="omh_123",
@@ -296,12 +296,12 @@ async def test_g_15_payment_failure(gateway, mock_executor):
 async def test_g_16_payment_unknown(gateway, mock_executor):
     req = create_auth_request()
     res = await gateway.authorize(req)
-    
+
     unk_rec = ExecutionReceipt(
         transaction_id="tx_123", status="UNKNOWN", timestamp=datetime.now(UTC)
     )
     mock_executor.execute.return_value = unk_rec
-    
+
     exec_req = GatewayExecuteRequest(
         transaction_id="tx_123", execution_token=res["execution_token"], amount=50.0,
         currency="USD", merchant_id="m1", mandate_hash="omh_123",
@@ -314,15 +314,15 @@ async def test_g_16_payment_unknown(gateway, mock_executor):
 async def test_g_17_unknown_reconciliation_success(gateway, mock_executor):
     req = create_auth_request()
     await gateway.authorize(req)
-    
+
     # Fake payment unknown state setup
     gateway._tx_states["tx_123"].current_state = TransactionState.PAYMENT_UNKNOWN
-    
+
     succ_rec = ExecutionReceipt(
         transaction_id="tx_123", status="SUCCESS", timestamp=datetime.now(UTC)
     )
     mock_executor.reconcile.return_value = succ_rec
-    
+
     res = await gateway.resolve_unknown("tx_123", "pid")
     assert res["status"] == "SUCCESS"
 
@@ -330,14 +330,14 @@ async def test_g_17_unknown_reconciliation_success(gateway, mock_executor):
 async def test_g_18_unknown_reconciliation_failure(gateway, mock_executor):
     req = create_auth_request()
     await gateway.authorize(req)
-    
+
     gateway._tx_states["tx_123"].current_state = TransactionState.PAYMENT_UNKNOWN
-    
+
     fail_rec = ExecutionReceipt(
         transaction_id="tx_123", status="FAILED", timestamp=datetime.now(UTC)
     )
     mock_executor.reconcile.return_value = fail_rec
-    
+
     res = await gateway.resolve_unknown("tx_123", "pid")
     assert res["status"] == "FAILED"
 
@@ -349,22 +349,22 @@ async def test_g_19_different_checkout_under_same_mandate(gateway):
     p1 = generator.generate_valid_payload()
     req1 = GatewayAuthorizeRequest(**p1)
     r1 = await gateway.authorize(req1)
-    
+
     p2 = generator.generate_valid_payload()
     p2["closed_checkout_token"] = p1["closed_checkout_token"]  # reuse same mandate and checkout token
     p2["cart"]["items"][0]["name"] = "different_item"
-    
+
     req2 = GatewayAuthorizeRequest(**p2)
     # Mock verifier to bypass signature mismatch caused by tampering with cart
     gateway.verifier.verify_closed_checkout_token = __import__('unittest').mock.AsyncMock(return_value=True)
     gateway.verifier.verify_open_mandate = __import__('unittest').mock.AsyncMock(return_value=True)
-    
+
     r2 = await gateway.authorize(req2)
     assert r2.get("execution_token") is not None
 @pytest.mark.asyncio
 async def test_g_20_concurrent_authorization(gateway, mock_idempotency):
     req = create_auth_request()
-    
+
     async def try_auth():
         try:
             return await gateway.authorize(req)
@@ -373,8 +373,8 @@ async def test_g_20_concurrent_authorization(gateway, mock_idempotency):
 
     # mock_idempotency will simulate that the first gets True, second gets False
     mock_idempotency.try_reserve.side_effect = [True, False, False]
-    
+
     results = await asyncio.gather(try_auth(), try_auth(), try_auth())
     successes = [r for r in results if r is not None]
-    
+
     assert len(successes) == 1

@@ -71,12 +71,12 @@ class ExceptionIntelligenceLayer:
     async def investigate(self, context: InvestigationContext) -> ExceptionInvestigation:
         system_prompt = """You are the Exception Intelligence module for VILR.
 You must analyze the failure context and provide a structured JSON response.
-You have NO authorization authority. 
+You have NO authorization authority.
 Do NOT authorize or execute payments. Your role is purely advisory.
 Return ONLY valid JSON matching the exact schema requested."""
 
         user_prompt = f"Analyze the following failure context:\\n{context.model_dump_json(indent=2)}\\n"
-        
+
         try:
             # We enforce a hard schema requirement on the LLM
             response_json = await self.llm.generate_json(
@@ -84,10 +84,10 @@ Return ONLY valid JSON matching the exact schema requested."""
                 user_prompt=user_prompt,
                 max_tokens=1024
             )
-            
+
             investigation = ExceptionInvestigation.model_validate(response_json)
             return investigation
-            
+
         except Exception as e:
             logger.error(f"Exception intelligence failed: {e}")
             return ExceptionInvestigation(

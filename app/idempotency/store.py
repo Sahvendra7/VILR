@@ -96,7 +96,7 @@ class RedisIdempotencyStore(IdempotencyStore):
         try:
             result = await self._commit_script(keys=[key], args=[transaction_id, self.committed_ttl])
             result_str = result.decode("utf-8") if isinstance(result, bytes) else result
-            
+
             if result_str == "OK" or result_str == "ALREADY_COMMITTED":
                 logger.info("RESERVATION_COMMITTED", key=key, transaction_id=transaction_id)
             elif result_str == "INVALID_STATE":
@@ -117,7 +117,7 @@ class RedisIdempotencyStore(IdempotencyStore):
         try:
             result = await self._release_script(keys=[key], args=[transaction_id])
             result_str = result.decode("utf-8") if isinstance(result, bytes) else result
-            
+
             if result_str == "OK" or result_str == "ALREADY_COMMITTED":
                 logger.info("RESERVATION_RELEASED", key=key, transaction_id=transaction_id)
             elif result_str == "INVALID_STATE":
@@ -157,13 +157,15 @@ class RedisIdempotencyStore(IdempotencyStore):
             "status": "available",
             "auth_data": auth_data
         })
-        await self.client.set(key, val, ex=ttl_seconds, nx=True)
+        success = await self.client.set(key, val, ex=ttl_seconds, nx=True)
+        if not success:
+            raise ValueError("Token collision or already exists")
 
     async def consume_execution_token(self, token: str, transaction_id: str, expected_amount: str, expected_currency: str, expected_merchant: str, expected_hash: str) -> dict:
         key = f"vilr:exec_token:{token}"
         result = await self._consume_script(keys=[key], args=[transaction_id, str(expected_amount), expected_currency, expected_merchant, expected_hash])
         result_str = result.decode("utf-8") if isinstance(result, bytes) else result
-        
+
         if result_str == "NOT_FOUND":
             raise ValueError("Invalid or expired execution token")
         elif result_str == "OWNERSHIP_FAILURE":
@@ -177,5 +179,5 @@ class RedisIdempotencyStore(IdempotencyStore):
             raise InvalidRequest("Execution parameters do not match authorized context")
         elif result_str == "INVALID_STATE":
             raise ValueError("Invalid token state")
-            
+
         return json.loads(result_str)

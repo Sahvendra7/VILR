@@ -29,7 +29,7 @@ async def test_unknown_cannot_trigger_automatic_retry():
 async def test_exception_intelligence_cannot_change_unknown_to_confirmed():
     # TEST 4: Exception Intelligence cannot change UNKNOWN to CONFIRMED.
     from app.exception.intelligence import ExceptionIntelligenceLayer, ExceptionInvestigation, InvestigationContext
-    
+
     class FakeInvestigator:
         async def generate_json(self, *args, **kwargs):
             return ExceptionInvestigation(
@@ -37,7 +37,7 @@ async def test_exception_intelligence_cannot_change_unknown_to_confirmed():
                 severity="HIGH", confidence=0.9, evidence=[], explanation="Timeout", recommended_action="RECONCILE",
                 decision_source="SYSTEM"
             )
-            
+
     ei = ExceptionIntelligenceLayer(FakeInvestigator())
     ctx = InvestigationContext(request_id="1", intent_id="1", transaction_id="1", workflow_state="PAYMENT_UNKNOWN",
                                deterministic_decision="DENIED", failure_code=None, relevant_evidence=[],
@@ -61,7 +61,7 @@ async def test_reconciliation_cannot_create_second_payment():
     from app.domain.gateway import GatewayOrchestrator
     assert getattr(GatewayOrchestrator.resolve_unknown, "__name__") == "resolve_unknown"
     # Resolve unknown purely updates state; does not invoke `execute_payment` on provider.
-    
+
 @pytest.mark.asyncio
 async def test_redis_unavailable_fails_closed():
     # TEST 7: Redis unavailable causes fail-closed behavior.
@@ -77,23 +77,23 @@ async def test_replay_produces_no_provider_side_effect():
     from app.domain.errors import DuplicateExecution
     from app.domain.gateway import GatewayOrchestrator
     from unittest.mock import AsyncMock, MagicMock
-    
+
     gateway = GatewayOrchestrator(
         semantic=AsyncMock(), policy=AsyncMock(), idempotency=AsyncMock(),
         verifier=AsyncMock(), payment_executor=AsyncMock(), audit=AsyncMock()
     )
-    
+
     gateway.idempotency.consume_execution_token.side_effect = DuplicateExecution("Token consumed")
-    
+
     from app.domain.gateway import GatewayExecuteRequest
     req = GatewayExecuteRequest(
         transaction_id="tx", execution_token="tok", merchant_id="m",
         amount="10", currency="INR", payment_method_id="pm",
         mandate_hash="mh", provider_idempotency_key="key"
     )
-    
+
     with pytest.raises(DuplicateExecution):
         await gateway.execute(req)
-        
+
     gateway.payment_executor.execute.assert_not_called()
 

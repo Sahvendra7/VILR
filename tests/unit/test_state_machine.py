@@ -5,7 +5,7 @@ from app.domain.errors import InvalidStateTransition
 def test_normal_success_path():
     sm = StateController()
     assert sm.current_state == TransactionState.INTENT_RECEIVED
-    
+
     sm.transition_to(TransactionState.AP2_VERIFIED)
     sm.transition_to(TransactionState.CART_VERIFIED)
     sm.transition_to(TransactionState.RESERVATION_ACQUIRED)
@@ -29,16 +29,16 @@ def test_terminal_state():
 def test_payment_unknown_recovery():
     sm = StateController(TransactionState.EXECUTION_STARTED)
     sm.transition_to(TransactionState.PAYMENT_UNKNOWN)
-    
+
     with pytest.raises(InvalidStateTransition):
         sm.transition_to(TransactionState.RESERVATION_COMMITTED) # Cannot go back
-    
+
     sm.transition_to(TransactionState.PAYMENT_CONFIRMED) # Valid manual reconciliation
-    
+
 def test_payment_unknown_failure():
     sm = StateController(TransactionState.PAYMENT_UNKNOWN)
     sm.transition_to(TransactionState.PAYMENT_FAILED)
-    
+
 def test_various_failures():
     paths = [
         (TransactionState.INTENT_RECEIVED, TransactionState.INVALID_SIGNATURE),

@@ -44,3 +44,12 @@ It proves that within the 40 modeled attack scenarios (including prompt injectio
 
 ### 15. What does it NOT prove?
 It does not guarantee 100% security against unmodeled zero-day attacks, LLM jailbreaks that perfectly mimic legitimate transactions, or underlying hardware/cryptographic vulnerabilities.
+
+### 16. What does the Razorpay TEST integration prove?
+It proves that VILR's internal execution token semantics map successfully to a real external Payment Gateway (Razorpay TEST API), allowing actual authorized side-effects to be executed safely after passing the cryptographic and semantic gauntlet.
+
+### 17. What does Supabase provide?
+Supabase provides a persistent tamper-evident audit chain. Every decision and execution step is logged with a `prev_record_hash`. This cryptographic chaining guarantees that any retroactive tampering by an attacker is immediately detectable.
+
+### 18. Why is RLS disabled?
+Row Level Security (RLS) is disabled because this is a hackathon prototype demonstrating application-level cryptographic tamper evidence. In a production environment, RLS would be strictly enforced, and append-only cloud logging (WORM storage) would be used.

@@ -180,7 +180,7 @@ flowchart TD
 
 10. **Can the audit trail be modified?**
     - **Answer**: Records can be modified by an insider with direct SQLite access. However, modification is detectable.
-    - **Defense**: Hash chaining — each record includes `prev_record_hash` (SHA-256 of the previous record's JCS-canonical form). Modifying any record breaks the chain. Production deployment should use WORM storage.
+    - **Defense**: Hash chaining — each record includes `prev_record_hash` (SHA-256 of the previous record's JCS-canonical form). Modifying any record breaks the chain. Production deployment should use persistent tamper-evident audit chain storage.
 
 11. **Can secrets leak through logs?**
     - **Answer**: Unlikely, but possible if logging is not configured correctly.
@@ -221,7 +221,7 @@ It is critical to understand what the AP2 cryptographic proofs establish versus 
 ## 7. Limitations and Accepted Risks
 
 - **Probabilistic LLM Checks**: Semantic verification relies on LLMs, which are inherently probabilistic. Adversarial prompts (T-01, T-02) may succeed. The semantic LLM layer provides probabilistic detection, not deterministic security. Its detection rate and false-rejection rate must be measured and reported per evaluation run. OPA hard limits bound the financial blast radius of any semantic bypass.
-- **SQLite as Audit Store**: SQLite is not production-grade for high-throughput concurrent writes. The hash chain provides application-level tamper evidence but does not prevent a sufficiently privileged insider from rewriting the entire chain. Production deployment requires WORM storage or append-only cloud logging.
+- **SQLite as Audit Store**: SQLite is not prototype for high-throughput concurrent writes. The hash chain provides application-level tamper evidence but does not prevent a sufficiently privileged insider from rewriting the entire chain. Production deployment requires persistent tamper-evident audit chain storage or append-only cloud logging.
 - **Mock Payment Provider**: The system uses a mock payment provider. Real-world payment failures (insufficient funds, network partitions, provider-side deduplication edge cases) are simulated but not fully exercised.
 - **PAYMENT_UNKNOWN State**: Payment timeout produces an ambiguous state. VILR does not assume success or failure. Automated reconciliation via provider status API is not implemented in the prototype.
 - **Simplified Key Management**: VILR uses basic file-based or environment-variable keys. There is no integration with enterprise KMS or HashiCorp Vault. The Signer abstraction makes this upgradable. (T-14)

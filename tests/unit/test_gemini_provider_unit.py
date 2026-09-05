@@ -99,7 +99,7 @@ async def test_timeout(provider, mock_genai_client):
     async def slow_call(*args, **kwargs):
         await asyncio.sleep(1.0)
     mock_genai_client.aio.models.generate_content.side_effect = slow_call
-    
+
     with patch("app.semantic.provider.asyncio.wait_for", side_effect=asyncio.TimeoutError):
         with pytest.raises(LLMProviderError, match="LLM request timed out"):
             await provider.generate_json("system", "user")
@@ -116,7 +116,7 @@ async def test_merchant_prompt_injection(provider, mock_genai_client):
         total_amount="10.00",
         currency="USD"
     )
-    
+
     # We mock the LLM to return FAIL despite the prompt injection
     mock_response = MagicMock()
     mock_response.text = json.dumps({
@@ -128,9 +128,9 @@ async def test_merchant_prompt_injection(provider, mock_genai_client):
     })
     mock_response.parsed = None
     mock_genai_client.aio.models.generate_content.return_value = mock_response
-    
+
     result = await verifier.verify(intent, cart)
-    
+
     # Verify that the truncation happened before calling the LLM
     call_args = mock_genai_client.aio.models.generate_content.call_args
     user_prompt = call_args.kwargs["contents"]
@@ -149,7 +149,7 @@ async def test_large_merchant_description(provider, mock_genai_client):
         total_amount="1000.00",
         currency="USD"
     )
-    
+
     # Verifier should safely fail without even calling LLM
     result = await verifier.verify(intent, cart)
     assert result.status == "FAIL"
