@@ -3,7 +3,11 @@ from app.security.crypto import compute_checkout_hash
 import uuid
 import secrets
 from typing import Dict, Any, Optional
-from datetime import datetime, UTC
+from datetime import datetime
+
+import time
+from app.domain.performance import PerformanceTracker
+from app.security.risk import DeterministicRiskCalculator
 
 from app.domain.models import (
     DecisionEvidence, IntentEvidence, CryptographicEvidence, CartEvidence,
@@ -11,6 +15,11 @@ from app.domain.models import (
 )
 from app.policy.explainability import DeterministicPolicyExplainer
 from datetime import datetime
+
+import time
+from app.domain.performance import PerformanceTracker
+from app.security.risk import DeterministicRiskCalculator
+
 import hashlib
 import json
 
@@ -23,6 +32,7 @@ from app.domain.models import (
 )
 from app.domain.state_machine import StateController, TransactionState
 from app.domain.errors import (
+    PolicyDenied,
     InvalidStateTransition, MandateExpired, InvalidSignature, HashMismatch,
     MerchantUntrusted, ReplayDetected, SemanticDrift, PolicyDenied,
     PaymentUnknown, DuplicateExecution, InvalidRequest, VILRError, IdempotencyConflict
@@ -107,7 +117,7 @@ class GatewayOrchestrator:
             "semantic_decision": kwargs.get("semantic_decision"),
             "semantic_confidence": kwargs.get("semantic_confidence"),
             "authorization_status": kwargs.get("authorization_status"),
-            "timestamp": datetime.now(UTC),
+            "timestamp": datetime.now(),
             "nonce": uuid.uuid4().hex,
             "payment_attempt_id": kwargs.get("payment_attempt_id"),
             "execution_status": kwargs.get("execution_status"),
@@ -126,6 +136,8 @@ class GatewayOrchestrator:
         await self.audit.record(rec)
 
     async def authorize(self, request: GatewayAuthorizeRequest) -> dict:
+        perf = PerformanceTracker()
+        
         tx_id = request.transaction_id
         state = StateController(TransactionState.INTENT_RECEIVED)
         self._tx_states[tx_id] = state
@@ -135,9 +147,12 @@ class GatewayOrchestrator:
             "merchant_id": request.cart.merchant_id,
         }
         
+        risk_signals = []
+        
         await self._log(tx_id, TransactionState.INTENT_RECEIVED, **context)
         
         try:
+            perf.start("crypto_verification")
             open_mandate = await self.verifier.verify_open_checkout_mandate(
                 request.open_checkout_token, request.user_public_key
             )
@@ -149,31 +164,53 @@ class GatewayOrchestrator:
             )
             context["open_mandate_hash"] = closed_mandate.open_mandate_hash
             context["cart_hash"] = closed_mandate.cart_hash
+            perf.stop("crypto_verification")
             
-            
+            perf.start("cart_verification")
             actual_cart_hash = compute_checkout_hash(request.cart)
             if actual_cart_hash != closed_mandate.cart_hash:
                 raise HashMismatch("Cart hash does not match closed mandate")
                 
             state.transition_to(TransactionState.CART_VERIFIED)
             await self._log(tx_id, TransactionState.CART_VERIFIED, **context)
+            perf.stop("cart_verification")
             
         except (InvalidSignature, HashMismatch, MerchantUntrusted, MandateExpired) as e:
+            if "crypto_verification" in perf._starts and "crypto_verification" not in perf.timings: perf.stop("crypto_verification")
+            if "cart_verification" in perf._starts and "cart_verification" not in perf.timings: perf.stop("cart_verification")
+            
             fail_state = TransactionState.INVALID_SIGNATURE
-            if isinstance(e, HashMismatch): fail_state = TransactionState.HASH_MISMATCH
-            if isinstance(e, MerchantUntrusted): fail_state = TransactionState.MERCHANT_UNTRUSTED
-            if isinstance(e, MandateExpired): fail_state = TransactionState.MANDATE_EXPIRED
+            if isinstance(e, HashMismatch):
+                fail_state = TransactionState.HASH_MISMATCH
+                risk_signals.append("CART_MISMATCH")
+            if isinstance(e, MerchantUntrusted):
+                fail_state = TransactionState.MERCHANT_UNTRUSTED
+                risk_signals.append("MERCHANT_PROHIBITED")
+            if isinstance(e, MandateExpired):
+                fail_state = TransactionState.MANDATE_EXPIRED
+                risk_signals.append("MANDATE_EXPIRED")
+            if isinstance(e, InvalidSignature):
+                risk_signals.append("SIGNATURE_FAILURE")
             
             state.transition_to(fail_state)
             context["failure_reason"] = str(e)
+            
+            risk = DeterministicRiskCalculator().calculate_risk(risk_signals)
+            context["evidence"] = {"risk": risk.model_dump(mode='json')}
+            
             await self._log(tx_id, fail_state, **context)
             raise
 
+        perf.start("redis_latency")
         reservation_key = f"{closed_mandate.open_mandate_hash}:{closed_mandate.cart_hash}"
         reserved = await self.idempotency.try_reserve(reservation_key, tx_id, 300)
+        perf.stop("redis_latency")
+        
         if not reserved:
             state.transition_to(TransactionState.REPLAY_DETECTED)
             context["failure_reason"] = "Replay detected"
+            risk_signals.append("REPLAY_DETECTED")
+            risk = DeterministicRiskCalculator().calculate_risk(risk_signals)
             
             # Construct partial evidence for replay
             context["evidence"] = {
@@ -182,7 +219,8 @@ class GatewayOrchestrator:
                     "replay_detected": True,
                     "reservation_status": "CONFLICT",
                     "execution_token_status": "NONE"
-                }
+                },
+                "risk": risk.model_dump(mode='json')
             }
             
             await self._log(tx_id, TransactionState.REPLAY_DETECTED, **context)
@@ -192,9 +230,14 @@ class GatewayOrchestrator:
         await self._log(tx_id, TransactionState.RESERVATION_ACQUIRED, **context)
 
         try:
+            perf.start("gemini_latency")
             sem_result = await self.semantic.verify(request.user_intent, request.cart)
+            perf.stop("gemini_latency")
             context["semantic_decision"] = sem_result.status
             context["semantic_confidence"] = sem_result.confidence
+            
+            if sem_result.status != "PASS":
+                risk_signals.append("SEMANTIC_FAIL")
             
             state.transition_to(TransactionState.SEMANTIC_ANALYZED)
             await self._log(tx_id, TransactionState.SEMANTIC_ANALYZED, **context)
@@ -204,6 +247,7 @@ class GatewayOrchestrator:
             raise
 
         try:
+            perf.start("opa_latency")
             opa_input = {
                 "mandate": open_mandate.constraints.model_dump(mode='json'),
                 "cart": request.cart.model_dump(mode='json'),
@@ -211,12 +255,20 @@ class GatewayOrchestrator:
                 "current_time": int(datetime.now().timestamp())
             }
             decision = await self.policy.evaluate(opa_input)
+            perf.stop("opa_latency")
             context["policy_decision"] = "ALLOW" if decision.allowed else "DENY"
+            state.transition_to(TransactionState.POLICY_EVALUATED)
+            await self._log(tx_id, TransactionState.POLICY_EVALUATED, **context)
             
-            # BUILD EVIDENCE
+            if not decision.allowed:
+                risk_signals.append("POLICY_VIOLATION")
+                
+            perf.start("risk_latency")
+            risk = DeterministicRiskCalculator().calculate_risk(risk_signals)
+            perf.stop("risk_latency")
+            
+            perf.start("evidence_construction")
             policy_meta = PolicyMetadata(name="payment_authorization", version=str(getattr(decision, "policy_version", "unknown")), hash=str(getattr(decision, "policy_hash", "unknown")))
-            explainer = DeterministicPolicyExplainer(policy_meta)
-            explanation = explainer.explain(decision, opa_input)
             
             evidence = DecisionEvidence(
                 intent=IntentEvidence(
@@ -265,58 +317,63 @@ class GatewayOrchestrator:
                     provider="Razorpay",
                     provider_request_id=None,
                     execution_status="NOT_REACHED"
-                )
+                ),
+                risk=risk
             )
             
             evidence_dict = evidence.model_dump(mode='json')
             canon_str = json.dumps(evidence_dict, separators=(',', ':'), sort_keys=True)
             evidence.evidence_hash = hashlib.sha256(canon_str.encode('utf-8')).hexdigest()
             evidence_dict["evidence_hash"] = evidence.evidence_hash
+            perf.stop("evidence_construction")
+            
+            perf.start("policy_explanation")
+            explainer = DeterministicPolicyExplainer(policy_meta)
+            explanation = explainer.explain(decision, opa_input)
+            perf.stop("policy_explanation")
             
             context["evidence"] = evidence_dict
             context["explanation"] = explanation.model_dump(mode='json')
             context["policy_version"] = policy_meta.version
             
             if not decision.allowed:
-                raise PolicyDenied(f"Policy denied: {decision.violations}")
+                state.transition_to(TransactionState.POLICY_DENIED)
+                await self._log(tx_id, TransactionState.POLICY_DENIED, **context)
+                raise PolicyDenied("Transaction denied by policy")
                 
-            state.transition_to(TransactionState.POLICY_EVALUATED)
-            await self._log(tx_id, TransactionState.POLICY_EVALUATED, **context)
+            state.transition_to(TransactionState.AUTHORIZED)
+            context["authorization_status"] = "AUTHORIZED"
             
+            perf.start("audit_latency")
+            await self._log(tx_id, TransactionState.AUTHORIZED, **context)
+            perf.stop("audit_latency")
+            
+            perf.stop_all()
+            # Store timings for benchmark output if needed
+            self._last_perf = perf.timings
+            
+            import secrets
+            execution_token = secrets.token_urlsafe(32)
+            await self.idempotency.issue_execution_token(
+                execution_token, tx_id,
+                str(request.cart.total_amount), request.cart.currency,
+                request.cart.merchant_id, closed_mandate.open_mandate_hash
+            )
+            
+            state.transition_to(TransactionState.RESERVATION_COMMITTED)
+            await self._log(tx_id, TransactionState.RESERVATION_COMMITTED, **context)
+            
+            return {
+                "transaction_id": tx_id,
+                "status": "AUTHORIZED",
+                "execution_token": execution_token,
+                "reservation_status": "COMMITTED"
+            }
+
         except Exception as e:
-            await self.idempotency.release(reservation_key, tx_id)
-            if not isinstance(e, PolicyDenied):
-                raise
-            state.transition_to(TransactionState.POLICY_DENIED)
-            context["failure_reason"] = str(e)
-            await self._log(tx_id, TransactionState.POLICY_DENIED, **context)
+            if not isinstance(e, (PolicyDenied, ReplayDetected)):
+                await self.idempotency.release(reservation_key, tx_id)
             raise
-
-        state.transition_to(TransactionState.AUTHORIZED)
-        context["authorization_status"] = "AUTHORIZED"
-        await self._log(tx_id, TransactionState.AUTHORIZED, **context)
-        
-        await self.idempotency.commit(reservation_key, tx_id)
-        state.transition_to(TransactionState.RESERVATION_COMMITTED)
-        await self._log(tx_id, TransactionState.RESERVATION_COMMITTED, **context)
-
-        execution_token = secrets.token_hex(32)
-        auth_data = {
-            "amount": str(request.cart.total_amount),
-            "currency": request.cart.currency,
-            "merchant_id": request.cart.merchant_id,
-            "mandate_hash": closed_mandate.open_mandate_hash
-        }
-        await self.idempotency.create_execution_token(execution_token, tx_id, auth_data, 3600)
-        expires_at = datetime.now().timestamp() + 3600
-
-        return {
-            "transaction_id": tx_id,
-            "status": "AUTHORIZED",
-            "execution_token": execution_token,
-            "policy_version": decision.policy_version,
-            "expires_at": datetime.fromtimestamp(expires_at).isoformat()
-        }
 
     async def execute(self, request: GatewayExecuteRequest) -> dict:
         tx_id = request.transaction_id
@@ -491,6 +548,7 @@ class GatewayOrchestrator:
             policy_version=record.explanation.get("policy_version", "1.0") if getattr(record, "explanation", None) else "1.0",
             evidence=record.evidence,
             explanation=record.explanation,
+            risk=record.evidence.get("risk") if record.evidence else None,
             audit_event_id=record.record_hash,
             previous_hash=record.prev_record_hash,
             current_hash=record.record_hash,

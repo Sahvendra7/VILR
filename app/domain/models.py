@@ -147,6 +147,7 @@ class AuditRecord(BaseModel):
     investigation: Optional[Dict[str, Any]] = None
     evidence: Optional[Dict[str, Any]] = None
     explanation: Optional[Dict[str, Any]] = None
+    risk: Optional[Dict[str, Any]] = None
     policy_metadata: Optional[Dict[str, str]] = None
 class SecurityReceipt(BaseModel):
     receipt_id: str
@@ -183,6 +184,7 @@ class SecurityReceipt(BaseModel):
 
     evidence: Optional[Dict[str, Any]] = None
     explanation: Optional[Dict[str, Any]] = None
+    risk: Optional[Dict[str, Any]] = None
 
     timestamp: datetime
 
@@ -238,6 +240,18 @@ class ExecutionEvidence(BaseModel):
     provider_request_id: Optional[str] = None
     execution_status: str
 
+
+class RiskFactor(BaseModel):
+    signal: str
+    weight: int
+    description: str
+
+class RiskAssessment(BaseModel):
+    score: int
+    level: str
+    factors: List[RiskFactor] = Field(default_factory=list)
+    calculated_at: datetime
+
 class DecisionEvidence(BaseModel):
     intent: IntentEvidence
     cryptographic: CryptographicEvidence
@@ -246,6 +260,7 @@ class DecisionEvidence(BaseModel):
     semantic: Optional[SemanticEvidence] = None
     policy: PolicyEvidence
     execution: ExecutionEvidence
+    risk: Optional[RiskAssessment] = None
     evidence_hash: Optional[str] = None
 
 class PolicyExplanation(BaseModel):

@@ -1,19 +1,9 @@
 import re
+
 with open("app/domain/gateway.py", "r") as f:
     content = f.read()
 
-replacement = """        execution_status = record.execution_status or "NOT_REACHED"
-        if record.state == "REPLAY_DETECTED":
-            execution_status = "BLOCKED_REPLAY"
-            
-        provider_call = "NO" if execution_status in ["NOT_REACHED", "BLOCKED_REPLAY"] else "YES"
-        
-        provider_request_id = record.payment_attempt_id if hasattr(record, "payment_attempt_id") and record.payment_attempt_id else None
-        
-        automatic_retry = "NO" if execution_status == "UNKNOWN" else None
-        reconciliation = "REQUIRED" if execution_status == "UNKNOWN" else None
-
-        receipt = SecurityReceipt(
+replacement = """        receipt = SecurityReceipt(
             receipt_id=f"rec_{transaction_id}",
             request_id=transaction_id,
             intent_id=record.intent_hash,
@@ -36,13 +26,14 @@ replacement = """        execution_status = record.execution_status or "NOT_REAC
             policy_version=record.explanation.get("policy_version", "1.0") if getattr(record, "explanation", None) else "1.0",
             evidence=record.evidence,
             explanation=record.explanation,
+            risk=record.evidence.get("risk") if record.evidence else None,
             audit_event_id=record.record_hash,
             previous_hash=record.prev_record_hash,
             current_hash=record.record_hash,
             timestamp=record.timestamp
         )"""
 
-content = re.sub(r'        receipt = SecurityReceipt\(.*?timestamp=record.timestamp\n        \)', replacement, content, flags=re.DOTALL)
+content = re.sub(r'        receipt = SecurityReceipt\(.*?\n        \)', replacement, content, flags=re.DOTALL)
 
 with open("app/domain/gateway.py", "w") as f:
     f.write(content)
