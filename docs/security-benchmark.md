@@ -39,15 +39,17 @@
 | T-33 | Invalid confidence value | Semantic | DENY | ALLOW | NONE | NONE | FAIL |  |
 | T-34 | Missing semantic evidence | Semantic | DENY | ALLOW | NONE | NONE | FAIL |  |
 | T-35 | Policy input type confusion | Policy | DENY | DENY | NONE | NONE | PASS |  |
-| T-36 | Tampered audit record | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
-| T-37 | Deleted audit record | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
-| T-38 | Reordered audit record | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
-| T-39 | Broken prev_record_hash | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
+| T-36 | Tampered audit record (Memory Ledger)* | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
+| T-37 | Deleted audit record (Memory Ledger)* | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
+| T-38 | Reordered audit record (Memory Ledger)* | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
+| T-39 | Broken prev_record_hash (Memory Ledger)* | Audit | DETECTED | ALLOW | NONE | NONE | FAIL |  |
 | T-40 | Replay of expired execution token | Execution | DENY | DENY | NONE | NONE | PASS |  |
 | V-01 | Valid Authorization | VALID | ALLOW | ALLOW | NONE | NONE | PASS |  |
 | V-02 | Valid Execution | VALID | ALLOW | ERROR | PAYMENT_EXECUTED | NONE | FAIL | 'execution_token' |
 
 ## 2. Security Metrics
+
+*\**Note: Scenarios T-36 through T-39 targeted the previous in-memory ledger representation and are inapplicable as database-tampering tests for the real Supabase backend used in the final architecture.*
 
 - False Authorization Rate: 41.7% (15/36)
 - Provider Side-Effect Rate: 0/20

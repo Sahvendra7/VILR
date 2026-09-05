@@ -46,6 +46,8 @@
         button.primary:hover:not(:disabled) { background: #2563eb; }
         button.danger-action { border-left: 4px solid var(--danger); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.active-scenario { background: var(--accent) !important; color: #fff !important; outline: 2px solid var(--primary); outline-offset: 2px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); border-left: none !important; }
+
         
         input { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; }
         input:focus { outline: none; border-color: var(--accent); }
@@ -55,6 +57,8 @@
         .pipeline-card.active { border-color: var(--accent); box-shadow: 0 0 10px rgba(59, 130, 246, 0.15); border-left-color: var(--accent); }
         .pipeline-card.success { border-color: var(--success); border-left-color: var(--success); }
         .pipeline-card.danger { border-color: var(--danger); border-left-color: var(--danger); background: rgba(239, 68, 68, 0.02); }
+        .pipeline-card.active.danger { border-left: 4px solid var(--danger); background: rgba(239, 68, 68, 0.08); }
+        .pipeline-card.active.idle-blocked { border-left: 4px solid #475569; background: rgba(71, 85, 105, 0.1); opacity: 0.6; }
         
         .pipeline-title { font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .pipeline-status { font-size: 12px; padding: 2px 8px; border-radius: 12px; background: var(--border); color: var(--text); }
@@ -117,7 +121,7 @@
         <!-- LEFT: CONTROLS -->
         <div class="panel">
             <h2 class="panel-title">Demo Scenarios</h2>
-            <button class="primary" id="btn-legit" onclick="runScenario('legitimate')">1. Legitimate Purchase</button>
+            <button class="active-scenario" id="btn-legit" onclick="runScenario('legitimate')">1. Legitimate Purchase</button>
             <button class="danger-action" id="btn-prompt" onclick="runScenario('prompt_injection')">2. Prompt Injection Attack</button>
             <button class="danger-action" id="btn-replay" onclick="runScenario('replay')">3. Replay Attack</button>
             <button id="btn-concurrency" onclick="runScenario('concurrency')">4. Concurrent Execution</button>
@@ -339,14 +343,20 @@
             if (state === 'INTENT_RECEIVED') {
                 logEvent('GATEWAY', 'Transaction intent received', 'PENDING');
             }
+            if (state === 'AP2_VERIFIED') {
+                document.getElementById('crypto-sig').innerText = 'VALID';
+                updateCard('crypto', 'success', 'VERIFIED');
+                logEvent('CRYPTO', 'Signature verified', 'PASS');
+            }
             if (state === 'CART_VERIFIED') {
-                if (ev.cryptographic) {
-                    const valid = ev.cryptographic.signature_verified;
-                    document.getElementById('crypto-sig').innerText = valid ? 'VALID' : 'INVALID';
-                    document.getElementById('crypto-cart').innerText = (ev.cryptographic.cart_hash||'').substring(0, 16)+'...';
-                    updateCard('crypto', valid ? 'success' : 'danger', valid ? 'VERIFIED' : 'FAILED');
-                    logEvent('CRYPTO', 'Cart cryptographic signature verified', valid ? 'PASS' : 'FAIL');
-                }
+                const cartHash = rec.cart_hash || '';
+                document.getElementById('crypto-sig').innerText = 'VALID';
+                document.getElementById('crypto-cart').innerText = cartHash.substring(0, 16) + (cartHash.length > 16 ? '...' : '');
+                updateCard('crypto', 'success', 'VERIFIED');
+                logEvent('CRYPTO', 'Cart hash verified', 'PASS');
+            }
+            if (state === 'RESERVATION_ACQUIRED') {
+                logEvent('GATEWAY', 'Idempotency reservation acquired', 'PASS');
             }
             if (state === 'SEMANTIC_ANALYZED') {
                 const decision = rec.semantic_decision;
@@ -361,6 +371,24 @@
                 updateCard('opa', decision === 'ALLOW' ? 'success' : 'danger', decision);
                 logEvent('OPA', 'Deterministic policy evaluated', decision);
             }
+            if (state === 'POLICY_DENIED') {
+                const decision = rec.policy_decision || 'DENY';
+                document.getElementById('opa-decision').innerText = 'DENY';
+                if (rec.explanation) document.getElementById('opa-exp').innerText = rec.explanation.message || '';
+                updateCard('opa', 'danger', 'DENY');
+                logEvent('OPA', 'Deterministic policy evaluated', 'DENY');
+
+                // Cascade: downstream stages not reached
+                document.getElementById('redis-state').innerText = 'NOT REACHED';
+                updateCard('redis', 'idle-blocked', 'NOT REACHED');
+                document.getElementById('payment-state').innerText = 'NOT REACHED';
+                updateCard('payment', 'idle-blocked', 'NOT REACHED');
+
+                const banner = document.getElementById('main-status');
+                banner.className = 'status-banner status-denied';
+                banner.innerText = 'ATTACK DETECTED / BLOCKED';
+                logEvent('GATEWAY', 'Authorization denied by policy', 'BLOCKED');
+            }
             if (state === 'RESERVATION_COMMITTED') {
                 document.getElementById('redis-state').innerText = 'LOCKED';
                 updateCard('redis', 'success', 'LOCKED');
@@ -370,6 +398,7 @@
                 document.getElementById('redis-state').innerText = 'REPLAY DETECTED';
                 updateCard('redis', 'danger', 'BLOCKED');
                 document.getElementById('payment-state').innerText = 'NOT REACHED';
+                updateCard('payment', 'idle-blocked', 'NOT REACHED');
                 
                 const banner = document.getElementById('main-status');
                 banner.className = 'status-banner status-denied';
@@ -388,7 +417,14 @@
                 banner.className = 'status-banner status-denied';
                 banner.innerText = 'ATTACK DETECTED / BLOCKED';
                 document.getElementById('payment-state').innerText = 'NOT REACHED';
+                updateCard('payment', 'idle-blocked', 'NOT REACHED');
                 logEvent('GATEWAY', 'Authorization denied by policy', 'BLOCKED');
+            }
+            if (state === 'PAYMENT_CONFIRMED') {
+                document.getElementById('redis-state').innerText = 'CONSUMED';
+                document.getElementById('payment-state').innerText = 'EXECUTED';
+                updateCard('payment', 'success', 'EXECUTED');
+                logEvent('PAYMENT', 'Mock Razorpay execution completed', 'SUCCESS');
             }
             if (state === 'PAYMENT_EXECUTED') {
                 document.getElementById('redis-state').innerText = 'CONSUMED';
@@ -442,6 +478,7 @@
         async function runScenario(type) {
             if (isProcessing) return;
             isProcessing = true;
+            setActiveButton(type);
             setButtonsState(true);
             clearPolling();
 
@@ -464,10 +501,6 @@
                     await executeReplayFlow();
                 } 
                 else if (type === 'concurrency') {
-                    if (!currentExecPayload) {
-                        showToast("Run a legitimate purchase first to generate a valid payload blueprint.");
-                        return;
-                    }
                     await executeConcurrencyFlow();
                 }
             } catch (e) {
@@ -560,18 +593,44 @@
 
         async function executeConcurrencyFlow() {
             resetUI('RUNNING 100 CONCURRENT TASKS...');
-            logEvent('GATEWAY', "Dispatching 100 concurrent execution requests...");
+            logEvent('GATEWAY', "Generating fresh authorized payload for concurrency test...");
             document.getElementById('concurrency-panel').classList.remove('hidden');
-            
+
+            // Generate a FRESH authorized payload so the token hasn't been consumed yet
+            const payload = await generatePayload("Concurrency test item", "1000.00", "Buy test item under 5000 INR", "5000.00");
+            const authRes = await fetch('/v1/authorize', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if (!authRes.ok) throw new Error("Failed to authorize fresh concurrency payload");
+            const authData = await authRes.json();
+            if (authData.status !== "AUTHORIZED") throw new Error("Fresh payload was not authorized");
+
+            currentTxId = payload.transaction_id;
+
+            const freshExecPayload = {
+                transaction_id: payload.transaction_id,
+                execution_token: authData.execution_token,
+                amount: "1000.00",
+                currency: "INR",
+                merchant_id: payload.cart.merchant_id,
+                mandate_hash: payload.open_mandate_hash,
+                provider_idempotency_key: `idem-${Date.now()}`,
+                payment_method_id: "pm-123"
+            };
+
+            logEvent('GATEWAY', "Dispatching 100 concurrent execution requests...");
             const exRes = await fetch('/v1/demo/concurrency', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(currentExecPayload)
+                body: JSON.stringify(freshExecPayload)
             });
             
             if (!exRes.ok) throw new Error("Concurrency endpoint failed");
             const data = await exRes.json();
             
+            document.getElementById('conc-attempts').innerText = data.attempts;
             document.getElementById('conc-success').innerText = data.successful_token_consumption;
             document.getElementById('conc-replay').innerText = data.replay_rejected;
             document.getElementById('conc-provider').innerText = data.observed_provider_executions;
@@ -583,15 +642,38 @@
                 banner.innerText = 'CONCURRENCY FAILED';
             } else {
                 banner.className = 'status-banner status-secure';
-                banner.innerText = 'SECURE - 1 PROVIDER EXECUTION OBSERVED';
+                banner.innerText = `SECURE - ${data.observed_provider_executions} PROVIDER EXECUTION OBSERVED`;
+            }
+
+            document.getElementById('btn-receipt').disabled = false;
+        }
+
+        function setActiveButton(type) {
+            ['btn-legit', 'btn-prompt', 'btn-replay', 'btn-concurrency'].forEach(id => {
+                document.getElementById(id).classList.remove('active-scenario');
+            });
+            const map = {
+                'legitimate': 'btn-legit',
+                'prompt_injection': 'btn-prompt',
+                'replay': 'btn-replay',
+                'concurrency': 'btn-concurrency'
+            };
+            if (map[type]) {
+                document.getElementById(map[type]).classList.add('active-scenario');
             }
         }
 
-        async function viewReceipt() {
+        async function viewReceipt(retryCount = 3) {
             if (!currentTxId) return;
             try {
                 const res = await fetch(`/v1/receipt/${currentTxId}`);
-                if (!res.ok) throw new Error("Receipt not found");
+                if (!res.ok) {
+                    if (res.status === 404 && retryCount > 0) {
+                        setTimeout(() => viewReceipt(retryCount - 1), 500);
+                        return;
+                    }
+                    throw new Error("Receipt not found");
+                }
                 const data = await res.json();
                 
                 const k = (label, val, code=false) => `<div class="kv-row"><span class="kv-key">${label}</span><span class="kv-val ${code?'hash':''}">${val||'N/A'}</span></div>`;
