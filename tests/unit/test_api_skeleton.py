@@ -22,7 +22,7 @@ def test_intents_implemented():
                 "soft_preferences": {}
             }
         }
-        response = client.post("/v1/intents", json=valid_body)
+        response = client.post("/v1/authorize", json=valid_body)
         assert response.status_code == 200
 
 # Other routes like authorize/execute will throw 500 or validation errors without a properly mocked state/redis,

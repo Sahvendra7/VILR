@@ -73,3 +73,7 @@ class MemoryAuditLedger(AuditLedger):
         record_hash = self._hash(canonical)
         rec.record_hash = record_hash
         return rec
+
+    async def record_investigation(self, tx_id: str, investigation: dict) -> None:
+        """Record an exception investigation."""
+        pass

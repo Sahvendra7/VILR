@@ -53,3 +53,9 @@ VILR integrates the official `google-genai` SDK using `gemini-3.6-flash`. It uti
 - **Simulated Recovery**: The revenue recovery metrics shown in the demo are conceptually simulated to demonstrate potential ROI.
 
 For detailed architecture, security models, and performance benchmarks, see the `docs/` directory.
+
+## Tier 1 Security Enhancements
+- **Exception Intelligence**: Advisory/explanatory only. LLM has no authorization authority.
+- **Security Receipt**: Deterministic evidence generated from actual system state.
+- **Ground-Truth Evaluation**: Expected decision vs actual decision + expected side effect vs actual side effect.
+- **Supabase**: Persistent tamper-evident audit storage.

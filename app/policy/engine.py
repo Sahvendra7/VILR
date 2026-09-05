@@ -1,4 +1,23 @@
 import httpx
+
+import hashlib
+import os
+
+def get_policy_metadata() -> dict:
+    path = "policies/authorization.rego"
+    if not os.path.exists(path):
+        return {"name": "payment_authorization", "version": "unknown", "hash": "unknown"}
+    with open(path, "rb") as f:
+        content = f.read()
+    h = hashlib.sha256(content).hexdigest()
+    # Read version from file (e.g. policy_version := "v1")
+    version = "unknown"
+    for line in content.decode("utf-8").splitlines():
+        if "policy_version :=" in line:
+            version = line.split(":=")[1].strip().strip('"')
+            break
+    return {"name": "payment_authorization", "version": version, "hash": h}
+
 from typing import Dict, Any
 import structlog
 from app.domain.interfaces import PolicyEngine
@@ -35,7 +54,8 @@ class OPAPolicyEngine(PolicyEngine):
                         {"code": v.get("code"), "message": v.get("message")} 
                         for v in result.get("violations", [])
                     ],
-                    policy_version=result.get("policy_version", "unknown")
+                    policy_version=result.get("policy_version", "unknown"),
+                    policy_hash=get_policy_metadata()["hash"]
                 )
         except httpx.RequestError as e:
             logger.error("OPA_UNAVAILABLE", error=str(e))

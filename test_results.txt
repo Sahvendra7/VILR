@@ -45,4 +45,1714 @@ tests/integration/test_idempotency_store.py::test_wrong_tx_cannot_commit ERROR [
 tests/integration/test_idempotency_store.py::test_committed_cannot_be_released ERROR [ 18%]
 tests/integration/test_idempotency_store.py::test_tentative_expiry ERROR [ 18%]
 tests/integration/test_idempotency_store.py::test_same_mandate_different_checkouts ERROR [ 19%]
-tests/integration/test_idempotency_store.py::test_concurrent_same_checkout 
+tests/integration/test_idempotency_store.py::test_concurrent_same_checkout ERROR [ 19%]
+tests/integration/test_idempotency_store.py::test_redis_unavailable PASSED [ 20%]
+tests/integration/test_idempotency_store.py::test_malformed_reservation ERROR [ 20%]
+tests/integration/test_idempotency_store.py::test_transaction_id_collision_different_keys ERROR [ 21%]
+tests/integration/test_idempotency_store.py::test_is_reserved_or_committed ERROR [ 21%]
+tests/integration/test_idempotency_store.py::test_idempotent_commit ERROR [ 22%]
+tests/integration/test_idempotency_store.py::test_release_not_found ERROR [ 22%]
+tests/integration/test_idempotency_store.py::test_commit_not_found ERROR [ 23%]
+tests/integration/test_idempotency_store.py::test_try_reserve_returns_false_if_owned_by_other ERROR [ 23%]
+tests/integration/test_idempotency_store.py::test_try_reserve_returns_false_if_already_committed ERROR [ 24%]
+tests/integration/test_idempotency_store.py::test_commit_extends_ttl ERROR [ 24%]
+tests/integration/test_idempotency_store.py::test_commit_unknown_status ERROR [ 25%]
+tests/integration/test_idempotency_store.py::test_release_unknown_status ERROR [ 25%]
+tests/integration/test_payment_execution.py::test_pa_01_successful_payment PASSED [ 26%]
+tests/integration/test_payment_execution.py::test_pa_02_confirmed_provider_failure PASSED [ 26%]
+tests/integration/test_payment_execution.py::test_pa_03_provider_timeout_to_unknown PASSED [ 27%]
+tests/integration/test_payment_execution.py::test_pa_04_reconciliation_unknown_to_success PASSED [ 27%]
+tests/integration/test_payment_execution.py::test_pa_05_reconciliation_unknown_to_failed PASSED [ 28%]
+tests/integration/test_payment_execution.py::test_pa_06_same_idempotency_key_no_duplicate PASSED [ 28%]
+tests/integration/test_payment_execution.py::test_pa_07_same_key_different_amount_conflict PASSED [ 29%]
+tests/integration/test_payment_execution.py::test_pa_08_same_key_different_currency_conflict PASSED [ 29%]
+tests/integration/test_payment_execution.py::test_pa_09_same_key_different_merchant_conflict PASSED [ 30%]
+tests/integration/test_payment_execution.py::test_pa_10_concurrent_duplicate_execution PASSED [ 30%]
+tests/integration/test_payment_execution.py::test_pa_11_unauthorized_execution_rejected PASSED [ 31%]
+tests/integration/test_payment_execution.py::test_pa_12_expired_execution_authorization_rejected PASSED [ 31%]
+tests/integration/test_payment_execution.py::test_pa_13_malformed_execution_request_rejected PASSED [ 32%]
+tests/integration/test_payment_execution.py::test_pa_14_provider_unavailable PASSED [ 32%]
+tests/integration/test_payment_execution.py::test_pa_15_payment_id_remains_stable_across_idempotent_replay PASSED [ 33%]
+tests/integration/test_payment_execution.py::test_reconcile_invalid_state_transition PASSED [ 33%]
+tests/integration/test_policy_engine.py::test_evaluate_allow FAILED      [ 34%]
+tests/integration/test_policy_engine.py::test_evaluate_deny_budget FAILED [ 34%]
+tests/integration/test_policy_engine.py::test_evaluate_multiple_violations FAILED [ 35%]
+tests/integration/test_policy_engine.py::test_security_llm_cannot_override_budget FAILED [ 35%]
+tests/integration/test_policy_engine.py::test_security_semantic_fail_causes_denial FAILED [ 36%]
+tests/integration/test_policy_engine.py::test_security_llm_cannot_override_merchant FAILED [ 36%]
+tests/integration/test_policy_engine.py::test_engine_unavailable PASSED  [ 37%]
+tests/integration/test_policy_engine.py::test_default_deny_malformed_input FAILED [ 37%]
+tests/integration/test_security_invariant.py::test_security_invariant_llm_pass_opa_deny PASSED [ 38%]
+tests/integration/test_security_invariant.py::test_security_invariant_llm_fail_opa_deny PASSED [ 38%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-01] PASSED [ 39%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-02] PASSED [ 39%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-03] PASSED [ 40%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-04] PASSED [ 40%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-05] PASSED [ 41%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-06] PASSED [ 41%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-07] PASSED [ 42%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-08] PASSED [ 42%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-09] PASSED [ 43%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-10] PASSED [ 43%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-11] PASSED [ 44%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-12] PASSED [ 44%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-13] PASSED [ 45%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-14] PASSED [ 45%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-15] PASSED [ 46%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-16] PASSED [ 46%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-17] PASSED [ 47%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-18] PASSED [ 47%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-19] PASSED [ 48%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-20] PASSED [ 48%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-21] PASSED [ 49%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-22] PASSED [ 49%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-23] PASSED [ 50%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-24] PASSED [ 50%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-25] PASSED [ 51%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-26] PASSED [ 51%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-27] PASSED [ 52%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-28] PASSED [ 52%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-29] PASSED [ 53%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-30] PASSED [ 53%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-31] PASSED [ 54%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-32] PASSED [ 54%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-33] PASSED [ 55%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-34] PASSED [ 55%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-35] PASSED [ 56%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-36] PASSED [ 56%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-37] PASSED [ 57%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-38] PASSED [ 57%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-39] PASSED [ 58%]
+tests/security/test_adversarial.py::test_adversarial_attack_on_vilr[T-40] PASSED [ 58%]
+tests/unit/test_api_skeleton.py::test_health PASSED                      [ 59%]
+tests/unit/test_api_skeleton.py::test_intents_implemented FAILED         [ 59%]
+tests/unit/test_audit_ledger.py::test_a_01_first_audit_record_uses_genesis_hash PASSED [ 60%]
+tests/unit/test_audit_ledger.py::test_a_02_sequential_records_form_valid_chain PASSED [ 60%]
+tests/unit/test_audit_ledger.py::test_a_03_modified_record_is_detected PASSED [ 61%]
+tests/unit/test_audit_ledger.py::test_a_04_deleted_record_is_detected PASSED [ 61%]
+tests/unit/test_audit_ledger.py::test_a_05_reordered_record_is_detected PASSED [ 62%]
+tests/unit/test_audit_ledger.py::test_a_06_modified_previous_hash_is_detected PASSED [ 62%]
+tests/unit/test_audit_ledger.py::test_a_07_different_transaction_chains_remain_independent PASSED [ 63%]
+tests/unit/test_audit_ledger.py::test_a_08_audit_retrieval_preserves_ordering PASSED [ 63%]
+tests/unit/test_audit_ledger.py::test_a_09_authorization_failure_creates_evidence PASSED [ 64%]
+tests/unit/test_audit_ledger.py::test_a_10_payment_unknown_creates_evidence PASSED [ 64%]
+tests/unit/test_audit_ledger.py::test_a_11_unknown_reconciliation_updates_evidence PASSED [ 65%]
+tests/unit/test_audit_ledger.py::test_a_12_sensitive_data_is_not_persisted PASSED [ 65%]
+tests/unit/test_crypto.py::test_keygen_and_jwk PASSED                    [ 66%]
+tests/unit/test_crypto.py::test_jcs_determinism PASSED                   [ 66%]
+tests/unit/test_crypto.py::test_checkout_hash_tampering PASSED           [ 67%]
+tests/unit/test_crypto.py::test_local_signer PASSED                      [ 67%]
+tests/unit/test_crypto.py::test_signer_wrong_alg PASSED                  [ 68%]
+tests/unit/test_crypto.py::test_jcs_golden_vector PASSED                 [ 68%]
+tests/unit/test_crypto.py::test_missing_claims_rejected PASSED           [ 69%]
+tests/unit/test_crypto.py::test_jcs_array_ordering PASSED                [ 69%]
+tests/unit/test_crypto.py::test_jcs_numeric_values PASSED                [ 70%]
+tests/unit/test_crypto.py::test_jcs_unicode PASSED                       [ 70%]
+tests/unit/test_crypto.py::test_checkout_hash_tampering_sku PASSED       [ 71%]
+tests/unit/test_crypto.py::test_checkout_hash_tampering_currency PASSED  [ 71%]
+tests/unit/test_crypto.py::test_checkout_hash_tampering_add_remove PASSED [ 72%]
+tests/unit/test_crypto.py::test_jwk_invalid_kty PASSED                   [ 72%]
+tests/unit/test_crypto.py::test_jwk_invalid_crv PASSED                   [ 73%]
+tests/unit/test_domain_models.py::test_hard_constraints_valid PASSED     [ 73%]
+tests/unit/test_domain_models.py::test_hard_constraints_invalid_currency PASSED [ 74%]
+tests/unit/test_domain_models.py::test_hard_constraints_negative_budget PASSED [ 74%]
+tests/unit/test_domain_models.py::test_user_intent_valid PASSED          [ 75%]
+tests/unit/test_domain_models.py::test_cart_item_validation PASSED       [ 75%]
+tests/unit/test_domain_models.py::test_semantic_assessment_confidence_bounds PASSED [ 76%]
+tests/unit/test_domain_models.py::test_missing_required_fields PASSED    [ 76%]
+tests/unit/test_domain_models.py::test_execution_request_valid PASSED    [ 77%]
+tests/unit/test_domain_models.py::test_execution_request_invalid_currency PASSED [ 77%]
+tests/unit/test_domain_models.py::test_audit_record_valid PASSED         [ 78%]
+tests/unit/test_domain_models.py::test_cart_valid PASSED                 [ 78%]
+tests/unit/test_gemini_provider_unit.py::test_valid_structured_pass PASSED [ 79%]
+tests/unit/test_gemini_provider_unit.py::test_valid_structured_review PASSED [ 79%]
+tests/unit/test_gemini_provider_unit.py::test_valid_structured_fail PASSED [ 80%]
+tests/unit/test_gemini_provider_unit.py::test_malformed_response PASSED  [ 80%]
+tests/unit/test_gemini_provider_unit.py::test_empty_response PASSED      [ 81%]
+tests/unit/test_gemini_provider_unit.py::test_api_exception PASSED       [ 81%]
+tests/unit/test_gemini_provider_unit.py::test_timeout PASSED             [ 82%]
+tests/unit/test_gemini_provider_unit.py::test_merchant_prompt_injection PASSED [ 82%]
+tests/unit/test_gemini_provider_unit.py::test_large_merchant_description PASSED [ 83%]
+tests/unit/test_mandate_verifier.py::test_verify_open_checkout_mandate PASSED [ 83%]
+tests/unit/test_mandate_verifier.py::test_expired_mandate PASSED         [ 84%]
+tests/unit/test_mandate_verifier.py::test_wrong_signer_key PASSED        [ 84%]
+tests/unit/test_mandate_verifier.py::test_modified_jwt PASSED            [ 85%]
+tests/unit/test_mandate_verifier.py::test_verify_closed_checkout_mandate PASSED [ 85%]
+tests/unit/test_mandate_verifier.py::test_verify_malformed_closed_checkout PASSED [ 86%]
+tests/unit/test_semantic_verifier.py::test_sv_01_valid_match PASSED      [ 86%]
+tests/unit/test_semantic_verifier.py::test_sv_02_product_substitution PASSED [ 87%]
+tests/unit/test_semantic_verifier.py::test_sv_03_category_mismatch PASSED [ 87%]
+tests/unit/test_semantic_verifier.py::test_sv_04_brand_preference PASSED [ 88%]
+tests/unit/test_semantic_verifier.py::test_sv_05_soft_preference_deviation PASSED [ 88%]
+tests/unit/test_semantic_verifier.py::test_sv_06_ambiguous PASSED        [ 89%]
+tests/unit/test_semantic_verifier.py::test_sv_07_over_budget PASSED      [ 89%]
+tests/unit/test_semantic_verifier.py::test_sv_08_malformed_json PASSED   [ 90%]
+tests/unit/test_semantic_verifier.py::test_sv_09_llm_timeout PASSED      [ 90%]
+tests/unit/test_semantic_verifier.py::test_sv_10_llm_unavailable PASSED  [ 91%]
+tests/unit/test_semantic_verifier.py::test_sv_11_prompt_injection PASSED [ 91%]
+tests/unit/test_semantic_verifier.py::test_sv_12_malicious_llm PASSED    [ 92%]
+tests/unit/test_semantic_verifier.py::test_sv_13_unicode PASSED          [ 92%]
+tests/unit/test_semantic_verifier.py::test_sv_14_long_intent_bounded PASSED [ 93%]
+tests/unit/test_semantic_verifier.py::test_sv_15_large_cart_bounded PASSED [ 93%]
+tests/unit/test_semantic_verifier.py::test_sv_16_missing_optional PASSED [ 94%]
+tests/unit/test_semantic_verifier.py::test_sv_17_contradictory PASSED    [ 94%]
+tests/unit/test_semantic_verifier.py::test_sv_18_equivalent_wording PASSED [ 95%]
+tests/unit/test_semantic_verifier.py::test_sv_19_merchant_metadata_instructs PASSED [ 95%]
+tests/unit/test_semantic_verifier.py::test_sv_20_unsupported_fields PASSED [ 96%]
+tests/unit/test_semantic_verifier.py::test_sv_21_invalid_status_enum PASSED [ 96%]
+tests/unit/test_state_machine.py::test_normal_success_path PASSED        [ 97%]
+tests/unit/test_state_machine.py::test_invalid_transition PASSED         [ 97%]
+tests/unit/test_state_machine.py::test_terminal_state PASSED             [ 98%]
+tests/unit/test_state_machine.py::test_payment_unknown_recovery PASSED   [ 98%]
+tests/unit/test_state_machine.py::test_payment_unknown_failure PASSED    [ 99%]
+tests/unit/test_state_machine.py::test_various_failures PASSED           [100%]
+
+==================================== ERRORS ====================================
+____________________ ERROR at setup of test_reserve_success ____________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+___________ ERROR at setup of test_reserve_semantic_failure_release ____________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+_____________ ERROR at setup of test_reserve_policy_denial_release _____________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+____________________ ERROR at setup of test_reserve_commit _____________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+________________ ERROR at setup of test_wrong_tx_cannot_commit _________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+_____________ ERROR at setup of test_committed_cannot_be_released ______________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+___________________ ERROR at setup of test_tentative_expiry ____________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+___________ ERROR at setup of test_same_mandate_different_checkouts ____________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+_______________ ERROR at setup of test_concurrent_same_checkout ________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+_________________ ERROR at setup of test_malformed_reservation _________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+________ ERROR at setup of test_transaction_id_collision_different_keys ________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+_______________ ERROR at setup of test_is_reserved_or_committed ________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+___________________ ERROR at setup of test_idempotent_commit ___________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+___________________ ERROR at setup of test_release_not_found ___________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+___________________ ERROR at setup of test_commit_not_found ____________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+______ ERROR at setup of test_try_reserve_returns_false_if_owned_by_other ______
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+____ ERROR at setup of test_try_reserve_returns_false_if_already_committed _____
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+__________________ ERROR at setup of test_commit_extends_ttl ___________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+_________________ ERROR at setup of test_commit_unknown_status _________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+________________ ERROR at setup of test_release_unknown_status _________________
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:850: in connect_check_health
+    await self._connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:1487: in _connect
+    reader, writer = await asyncio.open_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/streams.py:48: in open_connection
+    transport, _ = await loop.create_connection(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1137: in create_connection
+    raise exceptions[0]
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1107: in create_connection
+    sock = await self._connect_sock(
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:1010: in _connect_sock
+    await self.sock_connect(sock, address)
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:651: in sock_connect
+    return await fut
+           ^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/selector_events.py:659: in _sock_connect
+    sock.connect(address)
+E   PermissionError: [Errno 1] Operation not permitted
+
+During handling of the above exception, another exception occurred:
+tests/integration/test_idempotency_store.py:12: in redis_client
+    await client.ping()
+venv12/lib/python3.12/site-packages/redis/asyncio/client.py:929: in execute_command
+    conn = self.connection or await pool.get_connection()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/utils.py:249: in async_wrapper
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2824: in get_connection
+    await self.ensure_connection(connection)
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:2865: in ensure_connection
+    await connection.connect()
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:819: in connect
+    await self.retry.call_with_retry(
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:81: in call_with_retry
+    raise error
+venv12/lib/python3.12/site-packages/redis/asyncio/retry.py:69: in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+venv12/lib/python3.12/site-packages/redis/asyncio/connection.py:876: in connect_check_health
+    raise e
+E   redis.exceptions.ConnectionError: Error 1 connecting to localhost:6379. Operation not permitted.
+=================================== FAILURES ===================================
+___________________________ test_cart_tampering_http ___________________________
+tests/integration/test_cart_http.py:16: in test_cart_tampering_http
+    assert r.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_5c38a132ffcb4bd2a2b8dc80f53c37e4 user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_5c38a132ffcb4bd2a2b8dc80f53c37e4 user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=kdXFpFJe2zmQMSCCQhmwW7fnWWTAVVRuN3_mBD6evB0 transaction_id=tx_5c38a132ffcb4bd2a2b8dc80f53c37e4 user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=kdXFpFJe2zmQMSCCQhmwW7fnWWTAVVRuN3_mBD6evB0:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_5c38a132ffcb4bd2a2b8dc80f53c37e4
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=kdXFpFJe2zmQMSCCQhmwW7fnWWTAVVRuN3_mBD6evB0:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+____________________________ test_opa_routing_http _____________________________
+tests/integration/test_cart_http.py:38: in test_opa_routing_http
+    assert r.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_1edd8bc5586649dcb1eedcb95c3863e2 user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_1edd8bc5586649dcb1eedcb95c3863e2 user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=xfeb-hPgTKTo4yyeN_2pTfgKwuICKJBhs2K9-fXeo9Q transaction_id=tx_1edd8bc5586649dcb1eedcb95c3863e2 user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=xfeb-hPgTKTo4yyeN_2pTfgKwuICKJBhs2K9-fXeo9Q:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_1edd8bc5586649dcb1eedcb95c3863e2
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=xfeb-hPgTKTo4yyeN_2pTfgKwuICKJBhs2K9-fXeo9Q:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+________________________ test_concurrent_execution[10] _________________________
+tests/integration/test_concurrency.py:16: in test_concurrent_execution
+    assert r.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_f9c9c02e50ec4297aea1db0b18911ff7 user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_f9c9c02e50ec4297aea1db0b18911ff7 user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=XTEQynA6sQEJikcoJIbaZ2VUwAKQdq5DQGFIEXhuh1E transaction_id=tx_f9c9c02e50ec4297aea1db0b18911ff7 user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=XTEQynA6sQEJikcoJIbaZ2VUwAKQdq5DQGFIEXhuh1E:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_f9c9c02e50ec4297aea1db0b18911ff7
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=XTEQynA6sQEJikcoJIbaZ2VUwAKQdq5DQGFIEXhuh1E:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+________________________ test_concurrent_execution[50] _________________________
+tests/integration/test_concurrency.py:16: in test_concurrent_execution
+    assert r.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_a32a7e4e2eb240919863653dfe066631 user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_a32a7e4e2eb240919863653dfe066631 user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=bqkHH9kOIC-7q368Bj8Vmz80aYgiiJNjcGUghNGk7Gk transaction_id=tx_a32a7e4e2eb240919863653dfe066631 user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=bqkHH9kOIC-7q368Bj8Vmz80aYgiiJNjcGUghNGk7Gk:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_a32a7e4e2eb240919863653dfe066631
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=bqkHH9kOIC-7q368Bj8Vmz80aYgiiJNjcGUghNGk7Gk:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+________________________ test_concurrent_execution[100] ________________________
+tests/integration/test_concurrency.py:16: in test_concurrent_execution
+    assert r.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_af880680a41b4a88857823ad7b941003 user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_af880680a41b4a88857823ad7b941003 user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=2DtGjXIVfbo9kV2coltAFmW8pudn6oP9bzgX_pc1d0U transaction_id=tx_af880680a41b4a88857823ad7b941003 user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=2DtGjXIVfbo9kV2coltAFmW8pudn6oP9bzgX_pc1d0U:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_af880680a41b4a88857823ad7b941003
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=2DtGjXIVfbo9kV2coltAFmW8pudn6oP9bzgX_pc1d0U:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+_______________________ test_cross_transaction_execution _______________________
+tests/integration/test_concurrency.py:53: in test_cross_transaction_execution
+    assert r_a.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_48a52fac73354880a5a616cd14cf4eeb user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_48a52fac73354880a5a616cd14cf4eeb user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=V7xVL5aboLWOOQn2Thyg6h6KjTsxqNpftmPV4-Xv0zk transaction_id=tx_48a52fac73354880a5a616cd14cf4eeb user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=V7xVL5aboLWOOQn2Thyg6h6KjTsxqNpftmPV4-Xv0zk:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_48a52fac73354880a5a616cd14cf4eeb
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=V7xVL5aboLWOOQn2Thyg6h6KjTsxqNpftmPV4-Xv0zk:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+_______________________ test_payment_unknown_interaction _______________________
+tests/integration/test_concurrency.py:86: in test_payment_unknown_interaction
+    assert r.status_code == 200
+E   assert 400 == 200
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m456 transaction_id=tx_8a24e035899845e8b41b3f804359a884 user_id=u123
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m456 transaction_id=tx_8a24e035899845e8b41b3f804359a884 user_id=u123
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI merchant_id=m456 open_mandate_hash=Lzdq71VpzVGlJH6RgjiYjXBQXJp_X2vNwszQwrVN3hI transaction_id=tx_8a24e035899845e8b41b3f804359a884 user_id=u123
+2026-09-05 02:04:46 [info     ] RESERVATION_ATTEMPT            key=Lzdq71VpzVGlJH6RgjiYjXBQXJp_X2vNwszQwrVN3hI:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI transaction_id=tx_8a24e035899845e8b41b3f804359a884
+2026-09-05 02:04:46 [error    ] REDIS_UNAVAILABLE              error='Error 8 connecting to redis:6379. nodename nor servname provided, or not known.' key=Lzdq71VpzVGlJH6RgjiYjXBQXJp_X2vNwszQwrVN3hI:YQkpk0hDGJV8fWi-HxbZRf3iNGeym3F8D9p_1WfvkhI
+__________________________ test_canonical_happy_path ___________________________
+tests/integration/test_e2e.py:23: in test_canonical_happy_path
+    assert resp_intent.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+_______________ test_g_07_semantic_failure_releases_reservation ________________
+tests/integration/test_gateway.py:179: in test_g_07_semantic_failure_releases_reservation
+    with pytest.raises(SemanticDrift):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE SemanticDrift
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m1 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m1 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] RESERVATION_ACQUIRED           cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] SEMANTIC_ANALYZED              cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 semantic_confidence=0.1 semantic_decision=FAIL transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] POLICY_EVALUATED               cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 policy_decision=ALLOW semantic_confidence=0.1 semantic_decision=FAIL transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] AUTHORIZED                     authorization_status=AUTHORIZED cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 policy_decision=ALLOW semantic_confidence=0.1 semantic_decision=FAIL transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] RESERVATION_COMMITTED          authorization_status=AUTHORIZED cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 policy_decision=ALLOW semantic_confidence=0.1 semantic_decision=FAIL transaction_id=tx_123 user_id=u1
+_______________ test_g_19_different_checkout_under_same_mandate ________________
+tests/integration/test_gateway.py:349: in test_g_19_different_checkout_under_same_mandate
+    with pytest.raises(InvalidRequest):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE InvalidRequest
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [info     ] INTENT_RECEIVED                merchant_id=m1 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] AP2_VERIFIED                   merchant_id=m1 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] CART_VERIFIED                  cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] RESERVATION_ACQUIRED           cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] SEMANTIC_ANALYZED              cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 semantic_confidence=0.99 semantic_decision=PASS transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] POLICY_EVALUATED               cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 policy_decision=ALLOW semantic_confidence=0.99 semantic_decision=PASS transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] AUTHORIZED                     authorization_status=AUTHORIZED cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 policy_decision=ALLOW semantic_confidence=0.99 semantic_decision=PASS transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] RESERVATION_COMMITTED          authorization_status=AUTHORIZED cart_hash=ch_123 merchant_id=m1 open_mandate_hash=omh_123 policy_decision=ALLOW semantic_confidence=0.99 semantic_decision=PASS transaction_id=tx_123 user_id=u1
+2026-09-05 02:04:46 [info     ] RESERVATION_COMMITTED          execution_status=SUCCESS merchant_id=m1 open_mandate_hash=omh_123 payment_attempt_id=pid transaction_id=tx_123
+________________________ test_live_gemini_semantic_pass ________________________
+tests/integration/test_gemini_provider.py:34: in test_live_gemini_semantic_pass
+    assert result.status == "PASS"
+E   AssertionError: assert 'FAIL' == 'PASS'
+E     
+E     - PASS
+E     + FAIL
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:04:46 [error    ] LLM_PROVIDER_ERROR             error='[Errno 8] nodename nor servname provided, or not known'
+2026-09-05 02:04:46 [warning  ] SEMANTIC_VERIFICATION_ERROR    error='LLM request failed: [Errno 8] nodename nor servname provided, or not known'
+------------------------------ Captured log call -------------------------------
+WARNING  google_genai.models:models.py:8422 Direct use of automatic function calling (AFC) in AsyncModels.generate_content is not recommended. Instead, we recommend to use AFC in AsyncChat.send_message. Similarly, direct use of AFC in AsyncModels.generate_content_stream is not recommended. Instead, we recommend to use AFC in AsyncChat.send_message_stream.
+_____________________________ test_evaluate_allow ______________________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:37: in test_evaluate_allow
+    decision = await engine.evaluate(base_input)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:10 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+__________________________ test_evaluate_deny_budget ___________________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:45: in test_evaluate_deny_budget
+    decision = await engine.evaluate(base_input)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:10 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+______________________ test_evaluate_multiple_violations _______________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:53: in test_evaluate_multiple_violations
+    decision = await engine.evaluate(base_input)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:10 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+___________________ test_security_llm_cannot_override_budget ___________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:66: in test_security_llm_cannot_override_budget
+    decision = await engine.evaluate(base_input)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:10 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+__________________ test_security_semantic_fail_causes_denial ___________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:77: in test_security_semantic_fail_causes_denial
+    decision = await engine.evaluate(base_input)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:10 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+__________________ test_security_llm_cannot_override_merchant __________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:88: in test_security_llm_cannot_override_merchant
+    decision = await engine.evaluate(base_input)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:11 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+______________________ test_default_deny_malformed_input _______________________
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions
+    yield
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:256: in handle_async_request
+    raise exc from None
+venv12/lib/python3.12/site-packages/httpcore/_async/connection_pool.py:236: in handle_async_request
+    response = await connection.handle_async_request(
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:101: in handle_async_request
+    raise exc
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:78: in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_async/connection.py:124: in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpcore/_backends/auto.py:31: in connect_tcp
+    return await self._backend.connect_tcp(
+venv12/lib/python3.12/site-packages/httpcore/_backends/anyio.py:113: in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpcore/_exceptions.py:14: in map_exceptions
+    raise to_exc(exc) from exc
+E   httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+app/policy/engine.py:19: in evaluate
+    response = await client.post(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1859: in post
+    return await self.request(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1540: in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+venv12/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:393: in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:158: in __exit__
+    self.gen.throw(value)
+venv12/lib/python3.12/site-packages/httpx/_transports/default.py:118: in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+E   httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+tests/integration/test_policy_engine.py:100: in test_default_deny_malformed_input
+    decision = await engine.evaluate({"invalid": "input"})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app/policy/engine.py:42: in evaluate
+    raise PolicyUnavailable("Policy engine is unavailable") from e
+E   app.domain.errors.PolicyUnavailable: Policy engine is unavailable
+----------------------------- Captured stdout call -----------------------------
+2026-09-05 02:06:11 [error    ] OPA_UNAVAILABLE                error='All connection attempts failed'
+___________________________ test_intents_implemented ___________________________
+tests/unit/test_api_skeleton.py:26: in test_intents_implemented
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+=============================== warnings summary ===============================
+tests/integration/test_e2e.py: 1 warning
+tests/security/test_adversarial.py: 40 warnings
+tests/unit/test_api_skeleton.py: 2 warnings
+  /Users/sahvendraz/Desktop/VILR/app/main.py:47: DeprecationWarning: Call to deprecated close. (Use aclose() instead) -- Deprecated since version 5.0.1.
+    await redis_client.close()
+
+tests/integration/test_gateway.py::test_g_03_hash_mismatch
+tests/integration/test_gateway.py::test_g_09_llm_pass_cannot_bypass_opa
+tests/integration/test_gateway.py::test_g_12_execution_token_invalid_before_authorization
+tests/integration/test_gateway.py::test_g_20_concurrent_authorization
+  /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py:2217: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    def __init__(self, name, parent):
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/integration/test_gateway.py::test_g_06_replay
+  /Users/sahvendraz/Desktop/VILR/venv12/lib/python3.12/site-packages/pydantic/main.py:263: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/integration/test_gateway.py::test_g_15_payment_failure
+  /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py:472: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    __dict__['method_calls'] = _CallList()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/integration/test_gateway.py::test_g_17_unknown_reconciliation_success
+  /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py:2566: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    return tuple.__new__(cls, (name, args, kwargs))
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/integration/test_gateway.py::test_g_20_concurrent_authorization
+  /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/inspect.py:2549: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    pass
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/integration/test_security_invariant.py::test_security_invariant_llm_pass_opa_deny
+  /Users/sahvendraz/Desktop/VILR/tests/integration/test_security_invariant.py:69: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    with pytest.raises(PolicyDenied, match="Over budget"):
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/integration/test_security_invariant.py::test_security_invariant_llm_fail_opa_deny
+  /Users/sahvendraz/Desktop/VILR/tests/integration/test_security_invariant.py:134: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    with pytest.raises(PolicyDenied, match="Semantic validation failed"):
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_crypto.py::test_signer_wrong_alg
+  /Users/sahvendraz/Desktop/VILR/venv12/lib/python3.12/site-packages/jwt/api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 6 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/unit/test_gemini_provider_unit.py::test_merchant_prompt_injection
+  /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py:2159: RuntimeWarning: coroutine 'GeminiLLMProvider.generate_json.<locals>._call' was never awaited
+    these_magics = these_magics - set(type(self).__dict__)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_cart_http.py::test_cart_tampering_http - assert...
+FAILED tests/integration/test_cart_http.py::test_opa_routing_http - assert 40...
+FAILED tests/integration/test_concurrency.py::test_concurrent_execution[10]
+FAILED tests/integration/test_concurrency.py::test_concurrent_execution[50]
+FAILED tests/integration/test_concurrency.py::test_concurrent_execution[100]
+FAILED tests/integration/test_concurrency.py::test_cross_transaction_execution
+FAILED tests/integration/test_concurrency.py::test_payment_unknown_interaction
+FAILED tests/integration/test_e2e.py::test_canonical_happy_path - assert 404 ...
+FAILED tests/integration/test_gateway.py::test_g_07_semantic_failure_releases_reservation
+FAILED tests/integration/test_gateway.py::test_g_19_different_checkout_under_same_mandate
+FAILED tests/integration/test_gemini_provider.py::test_live_gemini_semantic_pass
+FAILED tests/integration/test_policy_engine.py::test_evaluate_allow - app.dom...
+FAILED tests/integration/test_policy_engine.py::test_evaluate_deny_budget - a...
+FAILED tests/integration/test_policy_engine.py::test_evaluate_multiple_violations
+FAILED tests/integration/test_policy_engine.py::test_security_llm_cannot_override_budget
+FAILED tests/integration/test_policy_engine.py::test_security_semantic_fail_causes_denial
+FAILED tests/integration/test_policy_engine.py::test_security_llm_cannot_override_merchant
+FAILED tests/integration/test_policy_engine.py::test_default_deny_malformed_input
+FAILED tests/unit/test_api_skeleton.py::test_intents_implemented - assert 404...
+ERROR tests/integration/test_idempotency_store.py::test_reserve_success - red...
+ERROR tests/integration/test_idempotency_store.py::test_reserve_semantic_failure_release
+ERROR tests/integration/test_idempotency_store.py::test_reserve_policy_denial_release
+ERROR tests/integration/test_idempotency_store.py::test_reserve_commit - redi...
+ERROR tests/integration/test_idempotency_store.py::test_wrong_tx_cannot_commit
+ERROR tests/integration/test_idempotency_store.py::test_committed_cannot_be_released
+ERROR tests/integration/test_idempotency_store.py::test_tentative_expiry - re...
+ERROR tests/integration/test_idempotency_store.py::test_same_mandate_different_checkouts
+ERROR tests/integration/test_idempotency_store.py::test_concurrent_same_checkout
+ERROR tests/integration/test_idempotency_store.py::test_malformed_reservation
+ERROR tests/integration/test_idempotency_store.py::test_transaction_id_collision_different_keys
+ERROR tests/integration/test_idempotency_store.py::test_is_reserved_or_committed
+ERROR tests/integration/test_idempotency_store.py::test_idempotent_commit - r...
+ERROR tests/integration/test_idempotency_store.py::test_release_not_found - r...
+ERROR tests/integration/test_idempotency_store.py::test_commit_not_found - re...
+ERROR tests/integration/test_idempotency_store.py::test_try_reserve_returns_false_if_owned_by_other
+ERROR tests/integration/test_idempotency_store.py::test_try_reserve_returns_false_if_already_committed
+ERROR tests/integration/test_idempotency_store.py::test_commit_extends_ttl - ...
+ERROR tests/integration/test_idempotency_store.py::test_commit_unknown_status
+ERROR tests/integration/test_idempotency_store.py::test_release_unknown_status
+====== 19 failed, 160 passed, 55 warnings, 20 errors in 85.13s (0:01:25) =======

@@ -1,12 +1,12 @@
-import re
-with open("app/api/routes.py", "r") as f:
+with open('app/api/routes.py', 'r') as f:
     content = f.read()
 
-# Remove /intents
-content = re.sub(r'@router.post\("/intents".*?return IntentResponse\(status="SUCCESS", message="Intent normalized successfully"\)', '', content, flags=re.DOTALL)
+import re
+content = re.sub(
+    r'(from fastapi import APIRouter.*?\n)',
+    r'\1from app.exception.intelligence import ExceptionInvestigation\nfrom app.domain.models import SecurityReceipt\n',
+    content
+)
 
-# Remove /verify
-content = re.sub(r'@router.post\("/verify".*?return VerifyResponse\(transaction_id=req.transaction_id, status="SUCCESS", isValid=True\)', '', content, flags=re.DOTALL)
-
-with open("app/api/routes.py", "w") as f:
+with open('app/api/routes.py', 'w') as f:
     f.write(content)

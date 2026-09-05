@@ -1,4 +1,3 @@
-
 import json
 from typing import List, Dict
 from simulator.models import AttackResult, AttackOutcome
@@ -17,86 +16,82 @@ class Reporter:
 
     def generate_markdown(self, path: str):
         with open(path, "w") as f:
-            f.write("# Security Benchmark Report\n\n")
-            f.write("## 1. Executive Summary\n")
-            f.write("This report benchmarks the VILR Gateway Orchestrator against adversarial attacks and quantifies deterministic properties, semantic capabilities, and financial side-effects.\n\n")
-
-            f.write("## 2. Attack Results\n\n")
-            f.write("| Attack ID | Name | Classification | Expected | Actual | Defense Layer | HTTP | Calls | Creates | TxID | Duration (ms) | Error | Evidence |\n")
-            f.write("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
+            f.write("# Ground-Truth Security Evaluation Matrix\n\n")
+            
+            f.write("## 1. Evaluation Results\n\n")
+            f.write("| Case ID | Name | Category | Expected Decision | Actual Decision | Expected Side-Effect | Actual Side-Effect | Status | Error |\n")
+            f.write("|---|---|---|---|---|---|---|---|---|\n")
 
             counts = {
-                "BLOCKED": 0,
-                "DETECTED": 0,
-                "NOT_BLOCKED": 0,
-                "ERROR": 0,
-                "INCONCLUSIVE": 0
+                "PASS": 0,
+                "FAIL": 0
             }
+            
+            total_cases = len(self.vilr)
+            valid_cases = len([r for r in self.vilr if r.category == "VALID"])
+            security_attacks = len([r for r in self.vilr if r.category not in ["VALID", "Regression", "Robustness"]])
+            regression_cases = len([r for r in self.vilr if r.category == "Regression"])
+            robustness_cases = len([r for r in self.vilr if r.category == "Robustness"])
+            
+            blocked = len([r for r in self.vilr if r.actual_decision == "DENY" and r.category != "VALID"])
+            detected = len([r for r in self.vilr if r.actual_decision == "DETECTED"])
+            not_blocked = len([r for r in self.vilr if r.actual_decision == "ALLOW" and r.category != "VALID"])
+            errors = len([r for r in self.vilr if r.actual_decision == "ERROR"])
+            inconclusive = len([r for r in self.vilr if r.actual_decision == "UNKNOWN"])
             
             payment_calls = 0
             payment_creations = 0
 
             for r in self.vilr:
-                counts[r.outcome.value] += 1
+                counts[r.status] += 1
                 payment_calls += r.payment_call_count
                 payment_creations += r.payment_creation_count
                 
-                f.write(f"| {r.attack_id} | {r.name} | {r.outcome.value} | {r.expected.value} | {getattr(r, 'actual', r.outcome.value)} | {r.defense_layer} | {r.http_status} | {r.payment_call_count} | {r.payment_creation_count} | {getattr(r, 'transaction_id', '')} | {r.duration_ms:.1f} | {r.error} | {getattr(r, 'evidence', '')} |\n")
+                f.write(f"| {r.case_id} | {r.name} | {r.category} | {r.expected_decision.value} | {r.actual_decision.value} | {r.expected_side_effect.value} | {r.actual_side_effect.value} | {r.status} | {r.error} |\n")
 
-            total_attacks = sum(counts.values())
+            f.write("\n## 2. Security Metrics\n\n")
             
-            f.write("\n## 3. Security Result Taxonomy\n\n")
-            f.write(f"- BLOCKED: {counts['BLOCKED']}\n")
-            f.write(f"- DETECTED: {counts['DETECTED']}\n")
-            f.write(f"- NOT_BLOCKED: {counts['NOT_BLOCKED']}\n")
-            f.write(f"- ERROR: {counts['ERROR']}\n")
-            f.write(f"- INCONCLUSIVE: {counts['INCONCLUSIVE']}\n")
+            attacks = [r for r in self.vilr if r.category != "VALID" and r.category != "Robustness"]
+            valid_tx = [r for r in self.vilr if r.category == "VALID"]
+            replay_tx = [r for r in self.vilr if r.category == "Replay"]
+            concurrency_tx = [r for r in self.vilr if r.category == "Concurrency"]
             
-            f.write("\n## 4. Side-Effect Metrics\n\n")
-            unauthorized_rate = f"{payment_creations} / {total_attacks}"
-            duplicate_rate = f"0 / 100"  # We ran 100x concurrency, we will inject this statically or dynamically
-            f.write(f"- **Unauthorized Payment Execution Rate**: {unauthorized_rate}\n")
-            f.write(f"- **Duplicate Payment Creation Rate**: {duplicate_rate}\n")
+            attacks_incorrectly_authorized = len([r for r in attacks if r.actual_decision == "ALLOW"])
+            relevant_attack_attempts = len(attacks)
+            far = (attacks_incorrectly_authorized / relevant_attack_attempts * 100) if relevant_attack_attempts else 0
             
-            f.write("\n## 5. Deterministic Security Metrics\n\n")
-            # Calculate from specific attacks
-            def filter_cat(cat): return [a for a in self.vilr if a.category == cat]
-            def success(lst): return sum(1 for a in lst if a.passed)
+            blocked_attack_attempts = len([r for r in attacks if r.actual_decision == "DENY"])
+            blocked_causing_side_effects = len([r for r in attacks if r.actual_decision == "DENY" and r.actual_side_effect == "PAYMENT_EXECUTED"])
             
-            # Categories based on ATTACKS definition:
-            # Let's map exactly based on known test cases
-            # For simplicity, we just print the stats based on what we have.
-            f.write("- **Hard Policy Bypass Rate**: 0 / 1\n") # T-05
-            f.write("- **Replay Prevention Rate**: 1 / 1\n") # T-04
-            f.write("- **Cart Tamper Detection Rate**: 1 / 1\n") # T-03
-            f.write("- **Execution Authorization Bypass Rate**: 1 / 1\n") # T-16
-            f.write("- **Duplicate Execution Rate**: 0 / 100\n") # Demonstrated in concurrency tests
-            f.write("- **Audit Tamper Detection Rate**: 1 / 1\n") # T-13
-            f.write("- **Malformed Input Rejection Rate**: 1 / 1\n") # T-09
+            blocked_replay = len([r for r in replay_tx if r.actual_decision == "DENY"])
+            replay_attempts = len(replay_tx)
+            
+            duplicate_payments = len([r for r in concurrency_tx if r.actual_side_effect == "PAYMENT_EXECUTED"])
+            duplicate_attempts = len(concurrency_tx)
+            
+            valid_denied = len([r for r in valid_tx if r.actual_decision == "DENY"])
+            valid_total = len(valid_tx)
+            
+            unknown_failure_rate = len([r for r in self.vilr if r.actual_decision in ["UNKNOWN", "ERROR"]]) / len(self.vilr) * 100 if len(self.vilr) else 0
 
-            f.write("\n## 6. Semantic Security Metrics\n\n")
-            f.write("*Note: This is a prototype adversarial measurement.*\n\n")
-            sem_attacks = filter_cat("Semantic")
-            # Let's just output some reasonable stats
-            f.write("- True Positives: 3\n")
-            f.write("- False Positives: 0\n")
-            f.write("- True Negatives: 2\n")
-            f.write("- False Negatives: 0\n")
-            f.write("- Semantic Detection Rate: 100%\n")
-            f.write("- False Rejection Rate: 0%\n")
-            f.write("- False Acceptance Rate: 0%\n")
+            f.write(f"- False Authorization Rate: {far:.1f}% ({attacks_incorrectly_authorized}/{relevant_attack_attempts})\n")
+            f.write(f"- Provider Side-Effect Rate: {blocked_causing_side_effects}/{blocked_attack_attempts}\n")
+            f.write(f"- Replay Prevention Rate: {blocked_replay}/{replay_attempts}\n")
+            f.write(f"- Duplicate Execution Rate: {duplicate_payments}/{duplicate_attempts}\n")
+            f.write(f"- False Denial Rate: {valid_denied}/{valid_total}\n")
+            f.write(f"- Unknown/Failure Rate: {unknown_failure_rate:.1f}%\n")
 
-            f.write("\n## 8. Layered Security Analysis\n\n")
-            f.write("| Attack | Crypto protects? | Redis protects? | Semantic protects? | OPA protects? | Executor protects? | Audit detects? |\n")
-            f.write("|---|---|---|---|---|---|---|\n")
-            f.write("| Prompt Injection | No | No | Yes | No | No | No |\n")
-            f.write("| Semantic Substitution | No | No | Yes | No | No | No |\n")
-            f.write("| Cart Tampering | Yes | No | No | No | No | No |\n")
-            f.write("| Replay Attack | No | Yes | No | No | No | No |\n")
-            f.write("| Policy Bypass | No | No | No | Yes | No | No |\n")
-            f.write("| Concurrent Execution | No | Yes | No | No | Yes | No |\n")
-            f.write("| Audit Tampering | No | No | No | No | No | Yes |\n")
-            
+            f.write("\n## 3. Summary Statistics\n\n")
+            f.write(f"Total cases: {total_cases}\n")
+            f.write(f"Valid: {valid_cases}\n")
+            f.write(f"Security attacks: {security_attacks}\n")
+            f.write(f"Regression: {regression_cases}\n")
+            f.write(f"Robustness: {robustness_cases}\n")
+            f.write(f"Blocked: {blocked}\n")
+            f.write(f"Detected: {detected}\n")
+            f.write(f"Not blocked: {not_blocked}\n")
+            f.write(f"Errors: {errors}\n")
+            f.write(f"Inconclusive: {inconclusive}\n")
 
     def generate_baseline_comparison(self, path: str):
         with open(path, "w") as f:
@@ -114,10 +109,9 @@ class Reporter:
                 bb = bb_results.get(attack_id)
                 bc = bc_results.get(attack_id)
 
-                ba_str = ba.outcome.value if ba else "N/A"
-                bb_str = bb.outcome.value if bb else "N/A"
-                bc_str = bc.outcome.value if bc else "N/A"
-                vilr_str = vilr_res.outcome.value
+                ba_str = ba.actual_decision.value if ba else "N/A"
+                bb_str = bb.actual_decision.value if bb else "N/A"
+                bc_str = bc.actual_decision.value if bc else "N/A"
+                vilr_str = vilr_res.actual_decision.value
                 
                 f.write(f"| {attack_id} | {vilr_res.category} | {ba_str} | {bb_str} | {bc_str} | {vilr_str} | {vilr_res.defense_layer} |\n")
-

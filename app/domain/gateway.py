@@ -4,6 +4,16 @@ import uuid
 import secrets
 from typing import Dict, Any, Optional
 from datetime import datetime, UTC
+
+from app.domain.models import (
+    DecisionEvidence, IntentEvidence, CryptographicEvidence, CartEvidence,
+    ReplayEvidence, SemanticEvidence, PolicyEvidence, ExecutionEvidence, PolicyMetadata
+)
+from app.policy.explainability import DeterministicPolicyExplainer
+from datetime import datetime
+import hashlib
+import json
+
 from pydantic import BaseModel
 from structlog import get_logger
 
@@ -22,6 +32,18 @@ from app.domain.interfaces import (
     PolicyEngine, AuditLedger
 )
 from app.execution.executor import PaymentExecutor
+
+from app.exception.intelligence import (
+    ExceptionIntelligenceLayer, 
+    InvestigationContext, 
+    ExceptionCategory, 
+    Severity, 
+    RecommendedAction, 
+    DecisionSource,
+    ExceptionInvestigation
+)
+from app.domain.models import SecurityReceipt
+
 
 logger = get_logger(__name__)
 
@@ -45,6 +67,7 @@ class GatewayExecuteRequest(BaseModel):
     payment_method_id: str
 
 class GatewayOrchestrator:
+
     def __init__(
         self,
         verifier: MandateVerifier,
@@ -52,7 +75,8 @@ class GatewayOrchestrator:
         semantic: SemanticVerifier,
         policy: PolicyEngine,
         payment_executor: PaymentExecutor,
-        audit: AuditLedger
+        audit: AuditLedger,
+        exception_intelligence: Optional[ExceptionIntelligenceLayer] = None
     ):
         self.verifier = verifier
         self.idempotency = idempotency
@@ -60,8 +84,10 @@ class GatewayOrchestrator:
         self.policy = policy
         self.payment_executor = payment_executor
         self.audit = audit
+        self.exception_intelligence = exception_intelligence
         
         self._tx_states: Dict[str, StateController] = {}
+
 
     async def _log(self, tx_id, state, **kwargs):
         logger.info(state.value, transaction_id=tx_id, **kwargs)
@@ -87,7 +113,10 @@ class GatewayOrchestrator:
             "execution_status": kwargs.get("execution_status"),
             "failure_reason": kwargs.get("failure_reason"),
             "state": state.value,
-            "prev_record_hash": prev_hash
+            "prev_record_hash": prev_hash,
+            "investigation": kwargs.get("investigation"),
+            "evidence": kwargs.get("evidence"),
+            "explanation": kwargs.get("explanation")
         }
         
         if hasattr(self.audit, "build_record"):
@@ -145,6 +174,17 @@ class GatewayOrchestrator:
         if not reserved:
             state.transition_to(TransactionState.REPLAY_DETECTED)
             context["failure_reason"] = "Replay detected"
+            
+            # Construct partial evidence for replay
+            context["evidence"] = {
+                "replay": {
+                    "idempotency_key": str(reservation_key),
+                    "replay_detected": True,
+                    "reservation_status": "CONFLICT",
+                    "execution_token_status": "NONE"
+                }
+            }
+            
             await self._log(tx_id, TransactionState.REPLAY_DETECTED, **context)
             raise ReplayDetected("Duplicate reservation")
 
@@ -172,6 +212,70 @@ class GatewayOrchestrator:
             }
             decision = await self.policy.evaluate(opa_input)
             context["policy_decision"] = "ALLOW" if decision.allowed else "DENY"
+            
+            # BUILD EVIDENCE
+            policy_meta = PolicyMetadata(name="payment_authorization", version=str(getattr(decision, "policy_version", "unknown")), hash=str(getattr(decision, "policy_hash", "unknown")))
+            explainer = DeterministicPolicyExplainer(policy_meta)
+            explanation = explainer.explain(decision, opa_input)
+            
+            evidence = DecisionEvidence(
+                intent=IntentEvidence(
+                    intent_id=request.user_intent.user_id,
+                    intent_timestamp=datetime.now(),
+                    intent_status="VERIFIED",
+                    intent_hash=str(open_mandate.intent_hash)
+                ),
+                cryptographic=CryptographicEvidence(
+                    signature_verified=True,
+                    intent_hash=str(open_mandate.intent_hash),
+                    cart_hash=str(closed_mandate.cart_hash),
+                    transaction_binding=True,
+                    verification_result="SUCCESS"
+                ),
+                cart=CartEvidence(
+                    expected_cart_hash=str(closed_mandate.cart_hash),
+                    actual_cart_hash=str(actual_cart_hash),
+                    cart_match=True,
+                    expected_amount=str(request.cart.total_amount),
+                    actual_amount=str(request.cart.total_amount)
+                ),
+                replay=ReplayEvidence(
+                    idempotency_key=str(reservation_key),
+                    replay_detected=False,
+                    reservation_status="ACQUIRED",
+                    execution_token_status="PENDING"
+                ),
+                semantic=SemanticEvidence(
+                    semantic_result=str(sem_result.status),
+                    confidence=float(sem_result.confidence),
+                    detected_mismatches=[],
+                    provider="GeminiLLMProvider",
+                    advisory_only=True
+                ) if sem_result else None,
+                policy=PolicyEvidence(
+                    policy_name=policy_meta.name,
+                    policy_version=policy_meta.version,
+                    policy_hash=policy_meta.hash,
+                    policy_decision=str("ALLOW" if decision.allowed else "DENY"),
+                    matched_rules=[],
+                    violations=decision.violations
+                ),
+                execution=ExecutionEvidence(
+                    execution_authorized=decision.allowed,
+                    provider="Razorpay",
+                    provider_request_id=None,
+                    execution_status="NOT_REACHED"
+                )
+            )
+            
+            evidence_dict = evidence.model_dump(mode='json')
+            canon_str = json.dumps(evidence_dict, separators=(',', ':'), sort_keys=True)
+            evidence.evidence_hash = hashlib.sha256(canon_str.encode('utf-8')).hexdigest()
+            evidence_dict["evidence_hash"] = evidence.evidence_hash
+            
+            context["evidence"] = evidence_dict
+            context["explanation"] = explanation.model_dump(mode='json')
+            context["policy_version"] = policy_meta.version
             
             if not decision.allowed:
                 raise PolicyDenied(f"Policy denied: {decision.violations}")
@@ -222,6 +326,26 @@ class GatewayOrchestrator:
                 request.execution_token, tx_id, 
                 str(request.amount), request.currency, request.merchant_id, request.mandate_hash
             )
+        except DuplicateExecution as e:
+            # Token already consumed -> execution replay
+            state = self._tx_states.get(tx_id)
+            if state:
+                state.transition_to(TransactionState.REPLAY_DETECTED)
+                context_replay = {
+                    "merchant_id": request.merchant_id,
+                    "payment_attempt_id": request.provider_idempotency_key,
+                    "failure_reason": "Execution token already consumed",
+                    "evidence": {
+                        "replay": {
+                            "idempotency_key": request.execution_token,
+                            "replay_detected": True,
+                            "reservation_status": "COMMITTED",
+                            "execution_token_status": "ALREADY_CONSUMED"
+                        }
+                    }
+                }
+                await self._log(tx_id, TransactionState.REPLAY_DETECTED, **context_replay)
+            raise
         except ValueError as e:
             raise InvalidRequest(str(e))
 
@@ -248,6 +372,16 @@ class GatewayOrchestrator:
         try:
             receipt = await self.payment_executor.execute(exec_request, state)
             context["execution_status"] = receipt.status
+            
+            # Retrieve prior record to update evidence
+            prior_record = await self.audit.get(tx_id)
+            if prior_record and prior_record.evidence:
+                ev = prior_record.evidence.copy()
+                if "execution" in ev:
+                    ev["execution"]["execution_status"] = receipt.status
+                    ev["execution"]["provider_request_id"] = receipt.provider_transaction_id or request.provider_idempotency_key
+                context["evidence"] = ev
+                
             await self._log(tx_id, state.current_state, **context)
             
             return {
@@ -285,3 +419,81 @@ class GatewayOrchestrator:
             "timestamp": receipt.timestamp.isoformat(),
             "provider_idempotency_key": provider_idempotency_key
         }
+
+    async def investigate_transaction(self, transaction_id: str) -> ExceptionInvestigation:
+        if not self.exception_intelligence:
+            raise ValueError("Exception intelligence not configured")
+            
+        record = await self.audit.get(transaction_id)
+        if not record:
+            raise ValueError("No audit record found for transaction")
+            
+        if record.execution_status == "SUCCESS":
+            raise ValueError("Cannot investigate successful transaction")
+
+        context = InvestigationContext(
+            request_id=transaction_id,
+            intent_id=record.intent_hash,
+            transaction_id=transaction_id,
+            workflow_state=record.state,
+            deterministic_decision=record.authorization_status or record.execution_status or "DENIED",
+            failure_code=record.failure_reason,
+            relevant_evidence=[f"State: {record.state}", f"Reason: {record.failure_reason}"],
+            policy_result={"decision": record.policy_decision},
+            semantic_result={"decision": record.semantic_decision, "confidence": record.semantic_confidence},
+            provider_result={"status": record.execution_status}
+        )
+        
+        investigation = await self.exception_intelligence.investigate(context)
+        
+        # Log investigation to audit
+        investigation_data = investigation.model_dump(mode='json')
+        await self._log(transaction_id, StateController(TransactionState(record.state)).current_state, investigation=investigation_data)
+        
+        return investigation
+
+    async def generate_receipt(self, transaction_id: str) -> SecurityReceipt:
+        record = await self.audit.get(transaction_id)
+        if not record:
+            raise ValueError("Transaction not found in audit")
+            
+        execution_status = record.execution_status or "NOT_REACHED"
+        if record.state == "REPLAY_DETECTED":
+            execution_status = "BLOCKED_REPLAY"
+            
+        provider_call = "NO" if execution_status in ["NOT_REACHED", "BLOCKED_REPLAY"] else "YES"
+        
+        provider_request_id = record.payment_attempt_id if hasattr(record, "payment_attempt_id") and record.payment_attempt_id else None
+        
+        automatic_retry = "NO" if execution_status == "UNKNOWN" else None
+        reconciliation = "REQUIRED" if execution_status == "UNKNOWN" else None
+
+        receipt = SecurityReceipt(
+            receipt_id=f"rec_{transaction_id}",
+            request_id=transaction_id,
+            intent_id=record.intent_hash,
+            transaction_id=transaction_id,
+            intent_verified=record.intent_hash != "unknown",
+            cryptographic_verification=record.cart_hash != "unknown",
+            cart_verified=record.cart_hash != "unknown",
+            replay_check="CLEAR" if record.state not in ["REPLAY_DETECTED"] else "FAILED",
+            semantic_result=record.semantic_decision,
+            policy_result=record.policy_decision or "NOT_REACHED",
+            execution_result=execution_status,
+            execution_status=execution_status,
+            provider_call=provider_call,
+            provider_request_id=provider_request_id,
+            automatic_retry=automatic_retry,
+            reconciliation=reconciliation,
+            final_decision=record.authorization_status or ("DENIED" if record.execution_status != "SUCCESS" else "AUTHORIZED"),
+            decision_source="SYSTEM",
+            explanation_source="ExceptionIntelligence" if record.investigation else None,
+            policy_version=record.explanation.get("policy_version", "1.0") if getattr(record, "explanation", None) else "1.0",
+            evidence=record.evidence,
+            explanation=record.explanation,
+            audit_event_id=record.record_hash,
+            previous_hash=record.prev_record_hash,
+            current_hash=record.record_hash,
+            timestamp=record.timestamp
+        )
+        return receipt

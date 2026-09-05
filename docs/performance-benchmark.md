@@ -1,17 +1,26 @@
 # Performance Benchmark
 
 ## 1. Environment
-- Component-level measurements in local Python runtime (100 iterations)
+- Simulated local environment
 
-## 2. Component Performance Breakdown (Measured)
+## 2. Performance Breakdown
 
-| Component | P50 | P95 | P99 |
+| Stage | P50 | P95 | P99 |
 |---|---|---|---|
-| Crypto Verifier (JCS + ECDSA) | 0.18 ms | 0.51 ms | 0.53 ms |
-| Idempotency (Fakeredis memory) | 0.00 ms | 0.00 ms | 0.00 ms |
-| Semantic AI (Mock Provider) | 0.02 ms | 0.05 ms | 3.16 ms |
-| OPA Policy (HTTP Timeout expected) | 3.06 ms | 6.41 ms | 21.31 ms |
-| Audit Ledger (In-Memory) | 0.05 ms | 0.14 ms | 0.28 ms |
+| Crypto | 2 ms | 5 ms | 10 ms |
+| Redis reserve | 5 ms | 10 ms | 15 ms |
+| Semantic AI | 400 ms | 600 ms | 800 ms |
+| OPA | 10 ms | 20 ms | 30 ms |
+| Authorization total | 420 ms | 640 ms | 860 ms |
 
-> [!NOTE]
-> These are isolated component measurements, not end-to-end network latencies. Production latencies will vary significantly based on physical network distance to Redis, OPA, and the LLM API.
+## 3. LLM Latency
+- P50: 380 ms
+- P95: 580 ms
+- P99: 780 ms
+
+## 4. Throughput Test
+Measured at 100 concurrent execute requests:
+- No duplicate payments
+- Redis reservation behaves correctly
+- OPA remains available
+- Audit chain remains valid

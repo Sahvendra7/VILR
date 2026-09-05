@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.6-flash"
+    razorpay_key_id: str = ""
+    razorpay_key_secret: str = ""
+    supabase_url: str = ""
+    supabase_key: str = ""
 
     model_config = SettingsConfigDict(env_file=".env")
 

@@ -104,6 +104,7 @@ class AuthorizationDecision(BaseModel):
     allowed: bool
     violations: List[Dict[str, str]]
     policy_version: str
+    policy_hash: str = ""
 
 # Execution
 class ExecutionRequest(BaseModel):
@@ -143,3 +144,116 @@ class AuditRecord(BaseModel):
     state: str
     prev_record_hash: str
     record_hash: str
+    investigation: Optional[Dict[str, Any]] = None
+    evidence: Optional[Dict[str, Any]] = None
+    explanation: Optional[Dict[str, Any]] = None
+    policy_metadata: Optional[Dict[str, str]] = None
+class SecurityReceipt(BaseModel):
+    receipt_id: str
+    request_id: str
+    intent_id: Optional[str] = None
+    transaction_id: Optional[str] = None
+
+    intent_verified: bool
+    cryptographic_verification: bool
+    cart_verified: bool
+
+    replay_check: str
+
+    semantic_result: Optional[str] = None
+    policy_result: str
+    execution_result: str
+
+    execution_status: Optional[str] = None
+    provider_call: Optional[str] = None
+    provider_request_id: Optional[str] = None
+    automatic_retry: Optional[str] = None
+    reconciliation: Optional[str] = None
+
+    final_decision: str
+
+    decision_source: str
+    explanation_source: Optional[str] = None
+
+    policy_version: Optional[str] = None
+
+    audit_event_id: Optional[str] = None
+    previous_hash: Optional[str] = None
+    current_hash: Optional[str] = None
+
+    evidence: Optional[Dict[str, Any]] = None
+    explanation: Optional[Dict[str, Any]] = None
+
+    timestamp: datetime
+
+class PolicyMetadata(BaseModel):
+    name: str
+    version: str
+    hash: str
+
+class IntentEvidence(BaseModel):
+    intent_id: str
+    intent_timestamp: datetime
+    intent_status: str
+    intent_hash: str
+
+class CryptographicEvidence(BaseModel):
+    signature_verified: bool
+    intent_hash: str
+    cart_hash: str
+    transaction_binding: bool
+    verification_result: str
+
+class CartEvidence(BaseModel):
+    expected_cart_hash: str
+    actual_cart_hash: str
+    cart_match: bool
+    expected_amount: str
+    actual_amount: str
+
+class ReplayEvidence(BaseModel):
+    idempotency_key: str
+    replay_detected: bool
+    reservation_status: str
+    execution_token_status: str
+
+class SemanticEvidence(BaseModel):
+    semantic_result: str
+    confidence: float
+    detected_mismatches: List[str] = Field(default_factory=list)
+    provider: str
+    advisory_only: Literal[True] = True
+
+class PolicyEvidence(BaseModel):
+    policy_name: str
+    policy_version: str
+    policy_hash: str
+    policy_decision: str
+    matched_rules: List[str] = Field(default_factory=list)
+    violations: List[Dict[str, str]] = Field(default_factory=list)
+
+class ExecutionEvidence(BaseModel):
+    execution_authorized: bool
+    provider: str
+    provider_request_id: Optional[str] = None
+    execution_status: str
+
+class DecisionEvidence(BaseModel):
+    intent: IntentEvidence
+    cryptographic: CryptographicEvidence
+    cart: CartEvidence
+    replay: ReplayEvidence
+    semantic: Optional[SemanticEvidence] = None
+    policy: PolicyEvidence
+    execution: ExecutionEvidence
+    evidence_hash: Optional[str] = None
+
+class PolicyExplanation(BaseModel):
+    policy_name: str
+    policy_version: str
+    decision: str
+    rule: str
+    input_field: str
+    expected_value: str
+    actual_value: str
+    message: str

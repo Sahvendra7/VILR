@@ -16,6 +16,7 @@ from app.execution.executor import PaymentExecutor
 from adapters.razorpay.provider import MockRazorpayProvider
 from app.audit.ledger import MemoryAuditLedger
 from app.domain.gateway import GatewayOrchestrator
+from app.exception.intelligence import ExceptionIntelligenceLayer
 from app.domain.errors import (
     VILRError, InvalidStateTransition, InvalidRequest, MandateExpired,
     InvalidSignature, HashMismatch, MerchantUntrusted, ReplayDetected,
@@ -35,13 +36,16 @@ async def lifespan(app: FastAPI):
     executor = PaymentExecutor(provider)
     audit = MemoryAuditLedger()
     
+    exception_intelligence = ExceptionIntelligenceLayer(semantic_provider)
+
     app.state.gateway = GatewayOrchestrator(
         verifier=verifier,
         idempotency=idempotency,
         semantic=semantic,
         policy=policy,
         payment_executor=executor,
-        audit=audit
+        audit=audit,
+        exception_intelligence=exception_intelligence
     )
     yield
     await redis_client.close()

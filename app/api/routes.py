@@ -1,4 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from app.exception.intelligence import ExceptionInvestigation
+from app.domain.models import SecurityReceipt
 from datetime import datetime
 from app.api.schemas import (
     IntentRequest, IntentResponse, 
@@ -58,3 +60,23 @@ async def verify_audit_chain(transaction_id: str, gateway = Depends(get_gateway)
 @router.get("/metrics")
 async def get_metrics():
     return {"status": "ok"}
+
+@router.post("/v1/investigate/{transaction_id}", response_model=ExceptionInvestigation)
+async def investigate_transaction(
+    transaction_id: str,
+    gateway=Depends(get_gateway)
+):
+    try:
+        return await gateway.investigate_transaction(transaction_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/v1/receipt/{transaction_id}", response_model=SecurityReceipt)
+async def get_receipt(
+    transaction_id: str,
+    gateway=Depends(get_gateway)
+):
+    try:
+        return await gateway.generate_receipt(transaction_id)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))

@@ -4,7 +4,7 @@ import time
 import traceback
 from typing import List, Dict
 from app.main import app
-from simulator.models import AttackDefinition, AttackResult, AttackOutcome, ExecutionResult
+from simulator.models import AttackDefinition, AttackResult, AttackOutcome, ExecutionResult, DecisionOutcome, SideEffectOutcome
 from simulator.baselines import get_baseline_gateway
 
 class AttackRunner:
@@ -31,14 +31,30 @@ class AttackRunner:
                         exec_result = await attack.execute(client)
                         duration_ms = (time.time() - start_time) * 1000
                         
+                        
                         calls = getattr(mock_provider, 'payment_call_count', 0)
                         creations = getattr(mock_provider, 'payment_creation_count', 0)
                         
+                        actual_side_effect = exec_result.actual_side_effect
+                        if creations > 0:
+                            actual_side_effect = SideEffectOutcome.PAYMENT_EXECUTED
+                        elif actual_side_effect == SideEffectOutcome.UNKNOWN and calls > 0:
+                            actual_side_effect = SideEffectOutcome.PAYMENT_EXECUTED
+                        elif actual_side_effect == SideEffectOutcome.UNKNOWN:
+                            actual_side_effect = SideEffectOutcome.NONE
+
+                        status = "PASS" if exec_result.actual_decision == attack.expected_decision and actual_side_effect == attack.expected_side_effect else "FAIL"
+                        
                         results.append(
                             AttackResult(
-                                attack_id=attack.attack_id,
+                                case_id=attack.attack_id,
                                 name=attack.name,
                                 category=attack.category,
+                                expected_decision=attack.expected_decision,
+                                actual_decision=exec_result.actual_decision,
+                                expected_side_effect=attack.expected_side_effect,
+                                actual_side_effect=actual_side_effect,
+                                status=status,
                                 outcome=exec_result.outcome,
                                 expected=attack.expected_result,
                                 defense_layer=attack.defense_layer,
@@ -48,21 +64,30 @@ class AttackRunner:
                                 payment_creation_count=creations,
                                 transaction_id=exec_result.transaction_id,
                                 evidence=exec_result.evidence,
-                                actual=exec_result.outcome.value,
+                                actual=exec_result.outcome.value if exec_result.outcome else "",
                                 duration_ms=duration_ms,
                                 error=exec_result.error
                             )
                         )
+
                     except Exception as e:
                         duration_ms = (time.time() - start_time) * 1000
                         calls = getattr(mock_provider, 'payment_call_count', 0)
                         creations = getattr(mock_provider, 'payment_creation_count', 0)
+                        
                         print(f"Error in {attack.attack_id}: {traceback.format_exc()}")
                         results.append(
                             AttackResult(
-                                attack_id=attack.attack_id,
+                                case_id=attack.attack_id,
                                 name=attack.name,
                                 category=attack.category,
+                                expected_decision=attack.expected_decision,
+                                actual_decision=DecisionOutcome.ERROR,
+                                expected_side_effect=attack.expected_side_effect,
+                                actual_side_effect=SideEffectOutcome.NONE,
+                                status="FAIL",
+                                error_type="Exception",
+                                explanation=str(e),
                                 outcome=AttackOutcome.ERROR,
                                 expected=attack.expected_result,
                                 defense_layer=attack.defense_layer,
@@ -78,6 +103,7 @@ class AttackRunner:
                                 details=traceback.format_exc()
                             )
                         )
+
                     
                     app.state.gateway = original_gateway
         return results

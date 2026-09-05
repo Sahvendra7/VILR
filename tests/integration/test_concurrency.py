@@ -19,7 +19,7 @@ async def test_concurrent_execution(concurrency):
         exe_payload = {
             "transaction_id": payload["transaction_id"], 
             "execution_token": token,
-            "amount": 45000.00,
+            "amount": "45000.00",
             "currency": "INR",
             "merchant_id": payload["cart"]["merchant_id"],
             "mandate_hash": jwt.decode(payload["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"],
@@ -64,7 +64,7 @@ async def test_cross_transaction_execution():
         exe_payload = {
             "transaction_id": payload_b["transaction_id"], 
             "execution_token": token_a,
-            "amount": 45000.00,
+            "amount": "45000.00",
             "currency": "INR",
             "merchant_id": payload_b["cart"]["merchant_id"],
             "mandate_hash": jwt.decode(payload_b["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"],
@@ -89,7 +89,7 @@ async def test_payment_unknown_interaction():
         exe_payload = {
             "transaction_id": payload["transaction_id"], 
             "execution_token": token,
-            "amount": 45000.00,
+            "amount": "45000.00",
             "currency": "INR",
             "merchant_id": payload["cart"]["merchant_id"],
             "mandate_hash": jwt.decode(payload["closed_checkout_token"], options={"verify_signature": False})["open_mandate_hash"],
